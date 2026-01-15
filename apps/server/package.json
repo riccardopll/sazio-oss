@@ -1,0 +1,27 @@
+{
+  "name": "@sazio-oss/server",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "cf:deploy": "wrangler deploy --minify",
+    "cf-typegen": "wrangler types --env-interface CloudflareBindings",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:migrate:local": "wrangler d1 migrations apply sazio-oss-db --local",
+    "dev": "wrangler dev",
+    "lint": "prettier . --write && pnpx sort-package-json",
+    "test": "vitest --run"
+  },
+  "dependencies": {
+    "@clerk/backend": "^2.29.2",
+    "@sazio-oss/api": "workspace:*",
+    "dotenv": "^17.2.3",
+    "hono": "^4.11.3"
+  },
+  "devDependencies": {
+    "@cloudflare/vitest-pool-workers": "^0.12.1",
+    "@cloudflare/workers-types": "^4.20260109.0",
+    "drizzle-kit": "^0.31.8",
+    "vitest": "^3.2.4"
+  }
+}
