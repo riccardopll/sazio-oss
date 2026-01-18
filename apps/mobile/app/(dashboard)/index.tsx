@@ -17,37 +17,36 @@ export default function DashboardScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const scrollY = useRef(new Animated.Value(0)).current;
 
-  const { data: settings, refetch: refetchSettings } =
-    trpc.getUserSettings.useQuery();
+  const { data: currentGoal, refetch: refetchGoal } =
+    trpc.getCurrentGoal.useQuery({});
 
   const { data: summary, refetch: refetchSummary } =
-    trpc.getDailySummary.useQuery();
+    trpc.getDailySummary.useQuery({});
 
   const onRefresh = useCallback(async () => {
     setRefreshing(true);
-    await Promise.all([refetchSettings(), refetchSummary()]);
+    await Promise.all([refetchGoal(), refetchSummary()]);
     setRefreshing(false);
-  }, [refetchSettings, refetchSummary]);
+  }, [refetchGoal, refetchSummary]);
 
-  const goals = settings ?? {
-    calorieGoal: 2000,
-    proteinGoal: 150,
-    carbsGoal: 200,
-    fatGoal: 65,
-  };
-
-  const consumed = summary ?? {
-    calories: 0,
-    protein: 0,
-    carbs: 0,
-    fat: 0,
-  };
+  const isLoading = !currentGoal || !summary;
 
   const headerOpacity = scrollY.interpolate({
     inputRange: [0, 60],
     outputRange: [0, 1],
     extrapolate: "clamp",
   });
+
+  if (isLoading) {
+    return (
+      <SafeAreaView
+        className="flex-1 bg-gray-50 items-center justify-center"
+        edges={["top"]}
+      >
+        <ActivityIndicator size="large" />
+      </SafeAreaView>
+    );
+  }
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
@@ -96,10 +95,16 @@ export default function DashboardScreen() {
 
         <DashboardCard className="mb-4">
           <ActivityRings
-            calories={{ consumed: consumed.calories, goal: goals.calorieGoal }}
-            protein={{ consumed: consumed.protein, goal: goals.proteinGoal }}
-            carbs={{ consumed: consumed.carbs, goal: goals.carbsGoal }}
-            fat={{ consumed: consumed.fat, goal: goals.fatGoal }}
+            calories={{
+              consumed: summary.calories,
+              goal: currentGoal.calorieGoal,
+            }}
+            protein={{
+              consumed: summary.protein,
+              goal: currentGoal.proteinGoal,
+            }}
+            carbs={{ consumed: summary.carbs, goal: currentGoal.carbsGoal }}
+            fat={{ consumed: summary.fat, goal: currentGoal.fatGoal }}
           />
         </DashboardCard>
       </Animated.ScrollView>

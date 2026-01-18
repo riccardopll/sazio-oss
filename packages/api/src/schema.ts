@@ -72,11 +72,14 @@ export const foodLogs = sqliteTable(
   ],
 );
 
-export const userSettings = sqliteTable(
-  "user_settings",
+export const goals = sqliteTable(
+  "goals",
   {
     ...baseColumns,
-    userId: text("user_id").notNull().unique(),
+    userId: text("user_id").notNull(),
+    name: text({ length: 100 }),
+    startAt: int("start_at").notNull(),
+    endAt: int("end_at"),
     proteinGoal: int("protein_goal").notNull(),
     carbsGoal: int("carbs_goal").notNull(),
     fatGoal: int("fat_goal").notNull(),
@@ -85,5 +88,11 @@ export const userSettings = sqliteTable(
     check("protein_goal_non_negative", sql`${table.proteinGoal} >= 0`),
     check("carbs_goal_non_negative", sql`${table.carbsGoal} >= 0`),
     check("fat_goal_non_negative", sql`${table.fatGoal} >= 0`),
+    check(
+      "start_before_end",
+      sql`${table.endAt} IS NULL OR ${table.startAt} < ${table.endAt}`,
+    ),
+    index("goals_user_id_idx").on(table.userId),
+    index("goals_user_date_idx").on(table.userId, table.startAt, table.endAt),
   ],
 );

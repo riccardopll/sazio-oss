@@ -20,7 +20,7 @@ app.get("/", (ctx) => ctx.json({ message: "Hello, World!" }));
 app.all("/trpc/*", async (ctx) => {
   const authHeader = ctx.req.header("Authorization");
   const token = authHeader?.replace("Bearer ", "");
-  let userId: string | null = null;
+  let userId: string | undefined;
   if (token) {
     try {
       const payload = await verifyToken(token, {
