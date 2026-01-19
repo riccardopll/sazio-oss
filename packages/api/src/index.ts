@@ -4,21 +4,50 @@ import { eq, and, gte, lt, lte, gt, isNull, or, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
 import { DateTime } from "luxon";
 import * as schema from "./schema";
-import { foods, foodLogs, goals } from "./schema";
+import { foods, foodLogs, goals, servingUnits } from "./schema";
+
+type Macros = { protein: number; carbs: number; fat: number };
 
 const CALORIES_PER_GRAM = { protein: 4, carbs: 4, fat: 9 } as const;
+const ZERO_MACROS: Macros = { protein: 0, carbs: 0, fat: 0 };
 
-function calculateCalories(macros: {
-  protein: number;
-  carbs: number;
-  fat: number;
-}) {
-  return Math.round(
+function calculateCalories(macros: Macros) {
+  return (
     macros.protein * CALORIES_PER_GRAM.protein +
-      macros.carbs * CALORIES_PER_GRAM.carbs +
-      macros.fat * CALORIES_PER_GRAM.fat,
+    macros.carbs * CALORIES_PER_GRAM.carbs +
+    macros.fat * CALORIES_PER_GRAM.fat
   );
 }
+
+function withCalorieGoal<
+  T extends { proteinGoal: number; carbsGoal: number; fatGoal: number },
+>(goal: T) {
+  return {
+    ...goal,
+    calorieGoal: calculateCalories({
+      protein: goal.proteinGoal,
+      carbs: goal.carbsGoal,
+      fat: goal.fatGoal,
+    }),
+  };
+}
+
+function calculateMultiplier(log: {
+  quantity: number;
+  servingSize: number;
+  gramsEquivalent: number | null;
+}) {
+  return log.gramsEquivalent
+    ? (log.quantity * log.gramsEquivalent) / log.servingSize
+    : log.quantity;
+}
+
+const dateTimezoneInput = z
+  .object({
+    date: z.coerce.date().optional(),
+    timezone: z.string().optional(),
+  })
+  .optional();
 
 export interface BaseContext {
   db: ReturnType<typeof drizzle<typeof schema>>;
@@ -41,14 +70,7 @@ const protectedProcedure = trpc.procedure.use(async ({ ctx, next }) => {
 
 export const appRouter = trpc.router({
   getCurrentGoal: protectedProcedure
-    .input(
-      z
-        .object({
-          date: z.coerce.date().optional(),
-          timezone: z.string().optional(),
-        })
-        .optional(),
-    )
+    .input(dateTimezoneInput)
     .query(async ({ ctx, input }) => {
       const { db, userId } = ctx;
       const date = input?.date ?? new Date();
@@ -64,23 +86,16 @@ export const appRouter = trpc.router({
         ),
         orderBy: desc(goals.startAt),
       });
-      const proteinGoal = goal?.proteinGoal ?? 0;
-      const carbsGoal = goal?.carbsGoal ?? 0;
-      const fatGoal = goal?.fatGoal ?? 0;
-      const calorieGoal = calculateCalories({
-        protein: proteinGoal,
-        carbs: carbsGoal,
-        fat: fatGoal,
-      });
       return {
         id: goal?.id,
         name: goal?.name,
         startAt: goal?.startAt,
         endAt: goal?.endAt,
-        calorieGoal,
-        proteinGoal,
-        carbsGoal,
-        fatGoal,
+        ...withCalorieGoal({
+          proteinGoal: goal?.proteinGoal ?? 0,
+          carbsGoal: goal?.carbsGoal ?? 0,
+          fatGoal: goal?.fatGoal ?? 0,
+        }),
       };
     }),
 
@@ -103,14 +118,7 @@ export const appRouter = trpc.router({
         limit,
         offset,
       });
-      return results.map((goal) => ({
-        ...goal,
-        calorieGoal: calculateCalories({
-          protein: goal.proteinGoal,
-          carbs: goal.carbsGoal,
-          fat: goal.fatGoal,
-        }),
-      }));
+      return results.map(withCalorieGoal);
     }),
 
   createGoal: protectedProcedure
@@ -157,14 +165,7 @@ export const appRouter = trpc.router({
         .insert(goals)
         .values({ userId, ...goalData })
         .returning();
-      return {
-        ...result,
-        calorieGoal: calculateCalories({
-          protein: result.proteinGoal,
-          carbs: result.carbsGoal,
-          fat: result.fatGoal,
-        }),
-      };
+      return withCalorieGoal(result);
     }),
 
   updateGoal: protectedProcedure
@@ -205,14 +206,7 @@ export const appRouter = trpc.router({
         .set(updates)
         .where(eq(goals.id, id))
         .returning();
-      return {
-        ...result,
-        calorieGoal: calculateCalories({
-          protein: result.proteinGoal,
-          carbs: result.carbsGoal,
-          fat: result.fatGoal,
-        }),
-      };
+      return withCalorieGoal(result);
     }),
 
   deleteGoal: protectedProcedure
@@ -232,14 +226,7 @@ export const appRouter = trpc.router({
     }),
 
   getDailySummary: protectedProcedure
-    .input(
-      z
-        .object({
-          date: z.coerce.date().optional(),
-          timezone: z.string().optional(),
-        })
-        .optional(),
-    )
+    .input(dateTimezoneInput)
     .query(async ({ ctx, input }) => {
       const { db, userId } = ctx;
       const date = input?.date ?? new Date();
@@ -252,10 +239,13 @@ export const appRouter = trpc.router({
           protein: foods.protein,
           carbs: foods.carbs,
           fat: foods.fat,
+          servingSize: foods.servingSize,
           quantity: foodLogs.quantity,
+          gramsEquivalent: servingUnits.gramsEquivalent,
         })
         .from(foodLogs)
         .innerJoin(foods, eq(foodLogs.foodId, foods.id))
+        .leftJoin(servingUnits, eq(foodLogs.servingUnitId, servingUnits.id))
         .where(
           and(
             eq(foodLogs.userId, userId),
@@ -263,20 +253,76 @@ export const appRouter = trpc.router({
             lt(foodLogs.createdAt, dateTime.plus({ days: 1 }).toMillis()),
           ),
         );
-      const totals = logs.reduce(
-        (acc, log) => ({
-          protein: acc.protein + log.protein * log.quantity,
-          carbs: acc.carbs + log.carbs * log.quantity,
-          fat: acc.fat + log.fat * log.quantity,
-        }),
-        { protein: 0, carbs: 0, fat: 0 },
-      );
+      const totals = logs.reduce((acc, log) => {
+        const multiplier = calculateMultiplier(log);
+        return {
+          protein: acc.protein + log.protein * multiplier,
+          carbs: acc.carbs + log.carbs * multiplier,
+          fat: acc.fat + log.fat * multiplier,
+        };
+      }, ZERO_MACROS);
       return {
         calories: calculateCalories(totals),
-        protein: Math.round(totals.protein),
-        carbs: Math.round(totals.carbs),
-        fat: Math.round(totals.fat),
+        ...totals,
       };
+    }),
+
+  getWeeklySummary: protectedProcedure
+    .input(
+      z.object({
+        weekStartDate: z.coerce.date(),
+        timezone: z.string().optional(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const { db, userId } = ctx;
+      const timezone = input.timezone ?? "UTC";
+      const weekStart = DateTime.fromJSDate(input.weekStartDate, {
+        zone: timezone,
+      }).startOf("day");
+      const weekEnd = weekStart.plus({ days: 7 });
+      const logs = await db
+        .select({
+          protein: foods.protein,
+          carbs: foods.carbs,
+          fat: foods.fat,
+          servingSize: foods.servingSize,
+          quantity: foodLogs.quantity,
+          createdAt: foodLogs.createdAt,
+          gramsEquivalent: servingUnits.gramsEquivalent,
+        })
+        .from(foodLogs)
+        .innerJoin(foods, eq(foodLogs.foodId, foods.id))
+        .leftJoin(servingUnits, eq(foodLogs.servingUnitId, servingUnits.id))
+        .where(
+          and(
+            eq(foodLogs.userId, userId),
+            gte(foodLogs.createdAt, weekStart.toMillis()),
+            lt(foodLogs.createdAt, weekEnd.toMillis()),
+          ),
+        );
+      const dailyTotals: Record<string, Macros> = {};
+      for (let i = 0; i < 7; i++) {
+        const day = weekStart.plus({ days: i });
+        dailyTotals[day.toISODate()!] = { ...ZERO_MACROS };
+      }
+      for (const log of logs) {
+        const logDate = DateTime.fromMillis(log.createdAt, { zone: timezone })
+          .startOf("day")
+          .toISODate()!;
+        if (dailyTotals[logDate]) {
+          const multiplier = calculateMultiplier(log);
+          dailyTotals[logDate].protein += log.protein * multiplier;
+          dailyTotals[logDate].carbs += log.carbs * multiplier;
+          dailyTotals[logDate].fat += log.fat * multiplier;
+        }
+      }
+      return Object.entries(dailyTotals).map(([date, totals]) => ({
+        date,
+        calories: calculateCalories(totals),
+        ...totals,
+        hasData: totals.protein > 0 || totals.carbs > 0 || totals.fat > 0,
+      }));
     }),
 });
 
