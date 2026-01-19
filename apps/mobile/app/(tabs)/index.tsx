@@ -30,10 +30,13 @@ export default function DashboardScreen() {
     [selectedDate],
   );
 
+  const timezone = DateTime.local().zoneName;
+
   const { data: currentGoal, refetch: refetchGoal } =
     trpc.getCurrentGoal.useQuery(
       {
         date: selectedDate.toJSDate(),
+        timezone,
       },
       {
         placeholderData: keepPreviousData,
@@ -47,6 +50,7 @@ export default function DashboardScreen() {
   } = trpc.getWeeklySummary.useQuery(
     {
       weekStartDate: weekStart,
+      timezone,
     },
     {
       placeholderData: keepPreviousData,
@@ -71,13 +75,11 @@ export default function DashboardScreen() {
     );
   }, [weekData, selectedDate]);
 
-  // Track if we've ever loaded data successfully
   const hasLoadedOnce = useRef(false);
   if (currentGoal && weekData) {
     hasLoadedOnce.current = true;
   }
 
-  // Only block initial render when we have never loaded data
   const isInitialLoading = !hasLoadedOnce.current && !currentGoal && !weekData;
 
   if (isInitialLoading) {
@@ -93,7 +95,6 @@ export default function DashboardScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-      {/* Fixed header - outside scroll */}
       <View className="px-4 pt-2">
         <Text className="text-sm text-gray-500">
           {selectedDate.toLocaleString({
@@ -107,13 +108,11 @@ export default function DashboardScreen() {
         </Text>
       </View>
 
-      {/* Fixed week selector - outside scroll */}
       <WeekSelector
         selectedDate={selectedDate}
         onSelectDate={handleSelectDate}
       />
 
-      {/* Scrollable content - only nutrition card */}
       <ScrollView
         className="flex-1"
         contentContainerClassName="px-4 pb-4"

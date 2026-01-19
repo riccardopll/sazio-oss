@@ -11,11 +11,23 @@ export function DashboardCard({
   ...props
 }: DashboardCardProps) {
   return (
-    <GlassView
-      className={`rounded-[32px] overflow-hidden ${className ?? ""}`}
+    <View
+      className={`rounded-[28px] overflow-hidden ${className ?? ""}`}
+      style={{
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.08,
+        shadowRadius: 24,
+        elevation: 8,
+      }}
       {...props}
     >
-      <View className="p-6">{children}</View>
-    </GlassView>
+      <GlassView
+        className="rounded-[28px] overflow-hidden border border-white/20"
+        glassEffectStyle="regular"
+      >
+        <View className="p-5">{children}</View>
+      </GlassView>
+    </View>
   );
 }

@@ -27,8 +27,8 @@ interface WeekData {
 }
 
 const DAY_NAMES = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
-const WEEKS_BEFORE = 52;
-const WEEKS_AFTER = 4;
+const WEEKS_BEFORE = 2;
+const WEEKS_AFTER = 2;
 
 function getWeekStart(date: DateTime): DateTime {
   return date.startOf("week");
@@ -54,10 +54,17 @@ interface DayButtonProps {
   date: DateTime;
   isSelected: boolean;
   isToday: boolean;
+  isDifferentMonth: boolean;
   onPress: () => void;
 }
 
-function DayButton({ date, isSelected, isToday, onPress }: DayButtonProps) {
+function DayButton({
+  date,
+  isSelected,
+  isToday,
+  isDifferentMonth,
+  onPress,
+}: DayButtonProps) {
   const scale = useSharedValue(1);
 
   const handlePressIn = () => {
@@ -74,6 +81,19 @@ function DayButton({ date, isSelected, isToday, onPress }: DayButtonProps) {
 
   const dayOfWeek = date.weekday - 1;
 
+  const getBackgroundClass = () => {
+    if (isSelected) return "bg-gray-900";
+    if (isToday) return "border-2 border-gray-300 bg-gray-100";
+    if (isDifferentMonth) return "bg-gray-200";
+    return "bg-gray-100";
+  };
+
+  const getTextClass = () => {
+    if (isSelected) return "text-white";
+    if (isDifferentMonth) return "text-gray-400";
+    return "text-text-primary";
+  };
+
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -85,23 +105,15 @@ function DayButton({ date, isSelected, isToday, onPress }: DayButtonProps) {
       accessibilityLabel={`${date.toFormat("EEEE, MMMM d")}`}
       accessibilityState={{ selected: isSelected }}
     >
-      <Text className="text-xs text-text-secondary mb-1">
+      <Text
+        className={`text-xs mb-1 ${isDifferentMonth ? "text-gray-400" : "text-text-secondary"}`}
+      >
         {DAY_NAMES[dayOfWeek]}
       </Text>
       <View
-        className={`w-11 h-11 rounded-full items-center justify-center ${
-          isSelected
-            ? "bg-gray-900"
-            : isToday
-              ? "border-2 border-gray-300 bg-gray-100"
-              : "bg-gray-100"
-        }`}
+        className={`w-11 h-11 rounded-full items-center justify-center ${getBackgroundClass()}`}
       >
-        <Text
-          className={`text-base font-semibold ${
-            isSelected ? "text-white" : "text-text-primary"
-          }`}
-        >
+        <Text className={`text-base font-semibold ${getTextClass()}`}>
           {date.day}
         </Text>
       </View>
@@ -130,6 +142,8 @@ export function WeekSelector({
     [screenWidth],
   );
 
+  const currentMonth = today.month;
+
   const renderWeek: ListRenderItem<WeekData> = useCallback(
     ({ item }) => (
       <View style={{ width: screenWidth }} className="flex-row px-4">
@@ -139,12 +153,13 @@ export function WeekSelector({
             date={day}
             isSelected={day.hasSame(selectedDate, "day")}
             isToday={day.hasSame(today, "day")}
+            isDifferentMonth={day.month !== currentMonth}
             onPress={() => onSelectDate(day)}
           />
         ))}
       </View>
     ),
-    [screenWidth, selectedDate, today, onSelectDate],
+    [screenWidth, selectedDate, today, onSelectDate, currentMonth],
   );
 
   const keyExtractor = useCallback(
