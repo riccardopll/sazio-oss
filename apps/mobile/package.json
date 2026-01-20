@@ -5,9 +5,7 @@
   "scripts": {
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "lint": "expo lint && prettier . --write && pnpx sort-package-json",
-    "start": "expo start",
-    "web": "expo start --web"
+    "lint": "expo lint && prettier . --write && pnpx sort-package-json"
   },
   "dependencies": {
     "@clerk/clerk-expo": "^2.19.17",

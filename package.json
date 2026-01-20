@@ -8,6 +8,7 @@
   "type": "module",
   "scripts": {
     "build": "pnpm -r build",
+    "deploy:server": "pnpm build && pnpm --filter @sazio-oss/server cf:deploy",
     "lint": "pnpm -r lint && pnpx sort-package-json",
     "prepare": "husky"
   },

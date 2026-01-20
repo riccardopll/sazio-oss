@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "d625b2a8-e63a-4c06-ab5b-38bf98b21d51",
+  "id": "9b560b27-7c42-4ace-a2d1-be313a31cab6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "food_logs": {
@@ -207,6 +207,116 @@
         }
       }
     },
+    "goals": {
+      "name": "goals",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true,
+          "autoincrement": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(strftime('%s', 'now') * 1000)"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(strftime('%s', 'now') * 1000)"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "name": {
+          "name": "name",
+          "type": "text(100)",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "start_at": {
+          "name": "start_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "end_at": {
+          "name": "end_at",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "protein_goal": {
+          "name": "protein_goal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "carbs_goal": {
+          "name": "carbs_goal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        },
+        "fat_goal": {
+          "name": "fat_goal",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false
+        }
+      },
+      "indexes": {
+        "goals_user_id_idx": {
+          "name": "goals_user_id_idx",
+          "columns": ["user_id"],
+          "isUnique": false
+        },
+        "goals_user_date_idx": {
+          "name": "goals_user_date_idx",
+          "columns": ["user_id", "start_at", "end_at"],
+          "isUnique": false
+        }
+      },
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "checkConstraints": {
+        "protein_goal_non_negative": {
+          "name": "protein_goal_non_negative",
+          "value": "\"goals\".\"protein_goal\" >= 0"
+        },
+        "carbs_goal_non_negative": {
+          "name": "carbs_goal_non_negative",
+          "value": "\"goals\".\"carbs_goal\" >= 0"
+        },
+        "fat_goal_non_negative": {
+          "name": "fat_goal_non_negative",
+          "value": "\"goals\".\"fat_goal\" >= 0"
+        },
+        "start_before_end": {
+          "name": "start_before_end",
+          "value": "\"goals\".\"end_at\" IS NULL OR \"goals\".\"start_at\" < \"goals\".\"end_at\""
+        }
+      }
+    },
     "serving_units": {
       "name": "serving_units",
       "columns": {
@@ -273,86 +383,6 @@
         "grams_equivalent_positive": {
           "name": "grams_equivalent_positive",
           "value": "\"serving_units\".\"grams_equivalent\" > 0"
-        }
-      }
-    },
-    "user_settings": {
-      "name": "user_settings",
-      "columns": {
-        "id": {
-          "name": "id",
-          "type": "integer",
-          "primaryKey": true,
-          "notNull": true,
-          "autoincrement": true
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now') * 1000)"
-        },
-        "updated_at": {
-          "name": "updated_at",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false,
-          "default": "(strftime('%s', 'now') * 1000)"
-        },
-        "user_id": {
-          "name": "user_id",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "protein_goal": {
-          "name": "protein_goal",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "carbs_goal": {
-          "name": "carbs_goal",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        },
-        "fat_goal": {
-          "name": "fat_goal",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "autoincrement": false
-        }
-      },
-      "indexes": {
-        "user_settings_user_id_unique": {
-          "name": "user_settings_user_id_unique",
-          "columns": ["user_id"],
-          "isUnique": true
-        }
-      },
-      "foreignKeys": {},
-      "compositePrimaryKeys": {},
-      "uniqueConstraints": {},
-      "checkConstraints": {
-        "protein_goal_non_negative": {
-          "name": "protein_goal_non_negative",
-          "value": "\"user_settings\".\"protein_goal\" >= 0"
-        },
-        "carbs_goal_non_negative": {
-          "name": "carbs_goal_non_negative",
-          "value": "\"user_settings\".\"carbs_goal\" >= 0"
-        },
-        "fat_goal_non_negative": {
-          "name": "fat_goal_non_negative",
-          "value": "\"user_settings\".\"fat_goal\" >= 0"
         }
       }
     }

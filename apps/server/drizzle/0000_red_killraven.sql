@@ -31,6 +31,25 @@ CREATE TABLE `foods` (
 );
 --> statement-breakpoint
 CREATE UNIQUE INDEX `foods_barcode_unique` ON `foods` (`barcode`);--> statement-breakpoint
+CREATE TABLE `goals` (
+	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
+	`created_at` integer DEFAULT (strftime('%s', 'now') * 1000) NOT NULL,
+	`updated_at` integer DEFAULT (strftime('%s', 'now') * 1000) NOT NULL,
+	`user_id` text NOT NULL,
+	`name` text(100),
+	`start_at` integer NOT NULL,
+	`end_at` integer,
+	`protein_goal` integer NOT NULL,
+	`carbs_goal` integer NOT NULL,
+	`fat_goal` integer NOT NULL,
+	CONSTRAINT "protein_goal_non_negative" CHECK("goals"."protein_goal" >= 0),
+	CONSTRAINT "carbs_goal_non_negative" CHECK("goals"."carbs_goal" >= 0),
+	CONSTRAINT "fat_goal_non_negative" CHECK("goals"."fat_goal" >= 0),
+	CONSTRAINT "start_before_end" CHECK("goals"."end_at" IS NULL OR "goals"."start_at" < "goals"."end_at")
+);
+--> statement-breakpoint
+CREATE INDEX `goals_user_id_idx` ON `goals` (`user_id`);--> statement-breakpoint
+CREATE INDEX `goals_user_date_idx` ON `goals` (`user_id`,`start_at`,`end_at`);--> statement-breakpoint
 CREATE TABLE `serving_units` (
 	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
 	`created_at` integer DEFAULT (strftime('%s', 'now') * 1000) NOT NULL,
@@ -41,18 +60,3 @@ CREATE TABLE `serving_units` (
 	FOREIGN KEY (`food_id`) REFERENCES `foods`(`id`) ON UPDATE no action ON DELETE no action,
 	CONSTRAINT "grams_equivalent_positive" CHECK("serving_units"."grams_equivalent" > 0)
 );
---> statement-breakpoint
-CREATE TABLE `user_settings` (
-	`id` integer PRIMARY KEY AUTOINCREMENT NOT NULL,
-	`created_at` integer DEFAULT (strftime('%s', 'now') * 1000) NOT NULL,
-	`updated_at` integer DEFAULT (strftime('%s', 'now') * 1000) NOT NULL,
-	`user_id` text NOT NULL,
-	`protein_goal` integer NOT NULL,
-	`carbs_goal` integer NOT NULL,
-	`fat_goal` integer NOT NULL,
-	CONSTRAINT "protein_goal_non_negative" CHECK("user_settings"."protein_goal" >= 0),
-	CONSTRAINT "carbs_goal_non_negative" CHECK("user_settings"."carbs_goal" >= 0),
-	CONSTRAINT "fat_goal_non_negative" CHECK("user_settings"."fat_goal" >= 0)
-);
---> statement-breakpoint
-CREATE UNIQUE INDEX `user_settings_user_id_unique` ON `user_settings` (`user_id`);
