@@ -1,6 +1,6 @@
 import { ClerkProvider } from "@clerk/clerk-expo";
 import { tokenCache } from "@clerk/clerk-expo/token-cache";
-import { Slot } from "expo-router";
+import { Stack } from "expo-router";
 import { TRPCProvider } from "../lib/TRPCProvider";
 import "../global.css";
 
@@ -9,7 +9,10 @@ export default function RootLayout() {
   return (
     <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
       <TRPCProvider>
-        <Slot />
+        <Stack screenOptions={{ headerShown: false }} initialRouteName="(tabs)">
+          <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="(auth)" />
+        </Stack>
       </TRPCProvider>
     </ClerkProvider>
   );

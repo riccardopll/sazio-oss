@@ -1,26 +1,20 @@
-import { Text, View } from "react-native";
 import { useUser } from "@clerk/clerk-expo";
+import { View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { SignOutButton } from "@/components/SignOutButton";
 
-export default function SettingsScreen() {
+export default function Settings() {
   const { user } = useUser();
-
   return (
     <SafeAreaView className="flex-1">
-      <View className="flex-1 p-5">
-        <Text className="text-2xl font-bold mb-6">Settings</Text>
-
-        <View className="p-4 mb-6">
-          <Text className="text-lg font-semibold mb-1">
-            {user?.fullName || user?.firstName || "User"}
-          </Text>
-          <Text className="text-sm">
-            {user?.primaryEmailAddress?.emailAddress}
-          </Text>
-        </View>
-
-        <View className="mt-auto items-center pb-24">
+      <View className="flex-1 items-center pt-12">
+        <Text className="text-2xl font-bold text-gray-900">
+          {user?.firstName}
+        </Text>
+        <Text className="text-base text-gray-500 mt-1">
+          {user?.primaryEmailAddress?.emailAddress}
+        </Text>
+        <View className="mt-8">
           <SignOutButton />
         </View>
       </View>

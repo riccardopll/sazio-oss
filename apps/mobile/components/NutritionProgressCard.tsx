@@ -38,7 +38,6 @@ export function NutritionProgressCard({
       </DashboardCard>
     );
   }
-
   return (
     <DashboardCard>
       <View className="gap-5">

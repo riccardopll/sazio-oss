@@ -2,17 +2,14 @@ import { useAuth } from "@clerk/clerk-expo";
 import { Redirect } from "expo-router";
 import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
 
-export default function DashboardLayout() {
+export default function TabsLayout() {
   const { isSignedIn, isLoaded } = useAuth();
-
   if (!isLoaded) {
     return null;
   }
-
   if (!isSignedIn) {
     return <Redirect href="/(auth)/sign-in" />;
   }
-
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">

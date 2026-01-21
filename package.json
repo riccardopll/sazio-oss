@@ -9,6 +9,8 @@
   "scripts": {
     "build": "pnpm -r build",
     "deploy:server": "pnpm build && pnpm --filter @sazio-oss/server cf:deploy",
+    "dev:mobile": "pnpm --filter @sazio-oss/mobile ios",
+    "dev:server": "pnpm build && pnpm --filter @sazio-oss/server dev",
     "lint": "pnpm -r lint && pnpx sort-package-json",
     "prepare": "husky"
   },

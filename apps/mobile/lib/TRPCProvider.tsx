@@ -7,7 +7,6 @@ import { trpc } from "./trpc";
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();
   const [queryClient] = useState(() => new QueryClient());
-
   const trpcClient = useMemo(
     () =>
       trpc.createClient({
@@ -26,7 +25,6 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       }),
     [getToken],
   );
-
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>

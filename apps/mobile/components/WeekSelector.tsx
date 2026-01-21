@@ -37,7 +37,6 @@ function getWeekStart(date: DateTime): DateTime {
 function generateWeeks(centerDate: DateTime): WeekData[] {
   const centerWeekStart = getWeekStart(centerDate);
   const weeks: WeekData[] = [];
-
   for (let i = -WEEKS_BEFORE; i <= WEEKS_AFTER; i++) {
     const weekStart = centerWeekStart.plus({ weeks: i });
     const days: DateTime[] = [];
@@ -46,7 +45,6 @@ function generateWeeks(centerDate: DateTime): WeekData[] {
     }
     weeks.push({ weekStart, days });
   }
-
   return weeks;
 }
 
@@ -66,34 +64,27 @@ function DayButton({
   onPress,
 }: DayButtonProps) {
   const scale = useSharedValue(1);
-
   const handlePressIn = () => {
     scale.value = withSpring(0.95, { damping: 15, stiffness: 200 });
   };
-
   const handlePressOut = () => {
     scale.value = withSpring(1, { damping: 15, stiffness: 200 });
   };
-
   const animatedStyle = useAnimatedStyle(() => ({
     transform: [{ scale: scale.value }],
   }));
-
   const dayOfWeek = date.weekday - 1;
-
   const getBackgroundClass = () => {
     if (isSelected) return "bg-gray-900";
     if (isToday) return "border-2 border-gray-300 bg-gray-100";
     if (isDifferentMonth) return "bg-gray-200";
     return "bg-gray-100";
   };
-
   const getTextClass = () => {
     if (isSelected) return "text-white";
     if (isDifferentMonth) return "text-gray-400";
     return "text-text-primary";
   };
-
   return (
     <AnimatedPressable
       onPress={onPress}
@@ -128,11 +119,8 @@ export function WeekSelector({
   const { width: screenWidth } = useWindowDimensions();
   const flatListRef = useRef<FlatList<WeekData>>(null);
   const today = useMemo(() => DateTime.now().startOf("day"), []);
-
   const weeks = useMemo(() => generateWeeks(today), [today]);
-
   const initialIndex = WEEKS_BEFORE;
-
   const getItemLayout = useCallback(
     (_: unknown, index: number) => ({
       length: screenWidth,
@@ -141,9 +129,7 @@ export function WeekSelector({
     }),
     [screenWidth],
   );
-
   const currentMonth = today.month;
-
   const renderWeek: ListRenderItem<WeekData> = useCallback(
     ({ item }) => (
       <View style={{ width: screenWidth }} className="flex-row px-4">
@@ -161,12 +147,10 @@ export function WeekSelector({
     ),
     [screenWidth, selectedDate, today, onSelectDate, currentMonth],
   );
-
   const keyExtractor = useCallback(
     (item: WeekData) => item.weekStart.toISODate()!,
     [],
   );
-
   return (
     <View className="mb-4">
       <FlatList
