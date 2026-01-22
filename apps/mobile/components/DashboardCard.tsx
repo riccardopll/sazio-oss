@@ -1,15 +1,7 @@
 import { View, type ViewProps } from "react-native";
 import { GlassView } from "expo-glass-effect";
 
-interface DashboardCardProps extends ViewProps {
-  children: React.ReactNode;
-}
-
-export function DashboardCard({
-  children,
-  className,
-  ...props
-}: DashboardCardProps) {
+export function DashboardCard({ children, className, ...props }: ViewProps) {
   return (
     <View
       className={`rounded-[28px] overflow-hidden ${className ?? ""}`}

@@ -77,7 +77,7 @@ export const goals = sqliteTable(
   {
     ...baseColumns,
     userId: text("user_id").notNull(),
-    name: text({ length: 100 }),
+    name: text({ length: 100 }).notNull(),
     startAt: int("start_at").notNull(),
     endAt: int("end_at"),
     proteinGoal: int("protein_goal").notNull(),

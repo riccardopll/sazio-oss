@@ -1,21 +1,41 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
+import { requestId } from "hono/request-id";
 import { drizzle } from "drizzle-orm/d1";
 import { appRouter, type BaseContext } from "@sazio-oss/api";
 import * as schema from "@sazio-oss/api/schema";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { verifyToken } from "@clerk/backend";
+import { log } from "./log";
 
 const app = new Hono<{
   Bindings: {
     DB: D1Database;
     CLERK_SECRET_KEY: string;
   };
+  Variables: {
+    requestId: string;
+  };
 }>();
 
-app.use("/*", cors());
+app.use(requestId());
 
-app.get("/", (ctx) => ctx.json({ message: "Hello, World!" }));
+app.use(async (ctx, next) => {
+  const start = Date.now();
+  await next();
+  const data = {
+    method: ctx.req.method,
+    path: ctx.req.path,
+    status: ctx.res.status,
+    duration: Date.now() - start,
+    requestId: ctx.var.requestId,
+  };
+  if (ctx.res.status >= 500) log.error("Request", data);
+  else if (ctx.res.status >= 400) log.warn("Request", data);
+  else log.info("Request", data);
+});
+
+app.use("/*", cors());
 
 app.all("/trpc/*", async (ctx) => {
   const authHeader = ctx.req.header("Authorization");
@@ -28,7 +48,7 @@ app.all("/trpc/*", async (ctx) => {
       });
       userId = payload.sub;
     } catch (error) {
-      console.error("JWT verification failed:", error);
+      log.error("JWT verification failed", { error: String(error) });
     }
   }
   return fetchRequestHandler({

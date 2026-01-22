@@ -1,52 +1,38 @@
 import { Pressable, Text, View } from "react-native";
 import { DateTime } from "luxon";
 import { DashboardCard } from "./DashboardCard";
-
-export interface GoalData {
-  id?: number;
-  name?: string | null;
-  startAt?: number | null;
-  endAt?: number | null;
-  proteinGoal: number;
-  carbsGoal: number;
-  fatGoal: number;
-  calorieGoal: number;
-}
+import type { GoalData } from "@sazio-oss/api";
 
 interface GoalCardProps {
   goal: GoalData | null;
   onPress: () => void;
-  className?: string;
+  className: string;
 }
 
-function formatDateRange(startAt?: number | null, endAt?: number | null) {
-  if (!startAt) return "Ongoing";
-  const start = DateTime.fromMillis(startAt);
-  const startFormatted = start.toFormat("MMM d");
+function formatDateRange(startAt: number, endAt?: number | null) {
+  const start = DateTime.fromMillis(startAt).toFormat("MMM d");
   if (endAt) {
-    const end = DateTime.fromMillis(endAt);
-    return `${startFormatted} - ${end.toFormat("MMM d")}`;
+    return `${start} - ${DateTime.fromMillis(endAt).toFormat("MMM d")}`;
   }
-  return `Started ${startFormatted}`;
+  return `Started ${start}`;
 }
 
 export function GoalCard({ goal, onPress, className }: GoalCardProps) {
-  const hasGoal = goal?.id != null;
   return (
     <Pressable onPress={onPress} className={className}>
       <DashboardCard>
         <View className="flex-row items-center justify-between">
           <Text className="text-base font-semibold text-gray-800">Goal</Text>
-          {hasGoal && (
+          {goal && (
             <Text className="text-sm text-gray-500">
               {formatDateRange(goal.startAt, goal.endAt)}
             </Text>
           )}
         </View>
-        {hasGoal ? (
+        {goal ? (
           <View className="mt-3">
             <Text className="text-lg font-medium text-gray-900">
-              {goal.name || "Current Goal"}
+              {goal.name}
             </Text>
             <View className="flex-row mt-2 gap-4">
               <View className="items-center">

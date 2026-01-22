@@ -1,4 +1,5 @@
 import { initTRPC, TRPCError } from "@trpc/server";
+import type { inferRouterOutputs } from "@trpc/server";
 import { z } from "zod";
 import { eq, and, gte, lt, lte, gt, isNull, or, desc } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/d1";
@@ -86,15 +87,16 @@ export const appRouter = trpc.router({
         ),
         orderBy: desc(goals.startAt),
       });
+      if (!goal) return null;
       return {
-        id: goal?.id,
-        name: goal?.name,
-        startAt: goal?.startAt,
-        endAt: goal?.endAt,
+        id: goal.id,
+        name: goal.name,
+        startAt: goal.startAt,
+        endAt: goal.endAt,
         ...withCalorieGoal({
-          proteinGoal: goal?.proteinGoal ?? 0,
-          carbsGoal: goal?.carbsGoal ?? 0,
-          fatGoal: goal?.fatGoal ?? 0,
+          proteinGoal: goal.proteinGoal,
+          carbsGoal: goal.carbsGoal,
+          fatGoal: goal.fatGoal,
         }),
       };
     }),
@@ -124,7 +126,7 @@ export const appRouter = trpc.router({
   createGoal: protectedProcedure
     .input(
       z.object({
-        name: z.string().max(100).optional(),
+        name: z.string().max(100),
         startAt: z.number().int(),
         endAt: z.number().int().optional(),
         proteinGoal: z.number().int().nonnegative(),
@@ -321,9 +323,11 @@ export const appRouter = trpc.router({
         date,
         calories: calculateCalories(totals),
         ...totals,
-        hasData: totals.protein > 0 || totals.carbs > 0 || totals.fat > 0,
       }));
     }),
 });
 
 export type AppRouter = typeof appRouter;
+
+type RouterOutput = inferRouterOutputs<AppRouter>;
+export type GoalData = NonNullable<RouterOutput["getCurrentGoal"]>;

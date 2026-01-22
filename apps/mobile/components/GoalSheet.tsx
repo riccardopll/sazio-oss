@@ -82,7 +82,15 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
       setCarbs("");
       setFat("");
     }
-  }, [params]);
+  }, [
+    params.goalId,
+    params.goalName,
+    params.startAt,
+    params.endAt,
+    params.proteinGoal,
+    params.carbsGoal,
+    params.fatGoal,
+  ]);
   const utils = trpc.useUtils();
   const createGoal = trpc.createGoal.useMutation({
     onSuccess: () => {
@@ -127,7 +135,7 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
       });
     } else {
       createGoal.mutate({
-        name: name || undefined,
+        name: name,
         startAt,
         endAt,
         proteinGoal: proteinValue,
@@ -151,8 +159,9 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
   const handleClose = () => {
     sheetRef.current?.dismiss();
   };
-  const isSaving =
-    createGoal.isPending || updateGoal.isPending || deleteGoal.isPending;
+  const isSaving = [createGoal, updateGoal, deleteGoal].some(
+    (m) => m.isPending,
+  );
   return (
     <TrueSheet ref={sheetRef} detents={["auto", 0.6]} grabber>
       <View className="flex-1 bg-white">

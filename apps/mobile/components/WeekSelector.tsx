@@ -1,4 +1,4 @@
-import { useRef, useCallback, useMemo } from "react";
+import { useRef, useCallback } from "react";
 import {
   View,
   Text,
@@ -118,17 +118,14 @@ export function WeekSelector({
 }: WeekSelectorProps) {
   const { width: screenWidth } = useWindowDimensions();
   const flatListRef = useRef<FlatList<WeekData>>(null);
-  const today = useMemo(() => DateTime.now().startOf("day"), []);
-  const weeks = useMemo(() => generateWeeks(today), [today]);
+  const today = DateTime.now().startOf("day");
+  const weeks = generateWeeks(today);
   const initialIndex = WEEKS_BEFORE;
-  const getItemLayout = useCallback(
-    (_: unknown, index: number) => ({
-      length: screenWidth,
-      offset: screenWidth * index,
-      index,
-    }),
-    [screenWidth],
-  );
+  const getItemLayout = (_: unknown, index: number) => ({
+    length: screenWidth,
+    offset: screenWidth * index,
+    index,
+  });
   const currentMonth = today.month;
   const renderWeek: ListRenderItem<WeekData> = useCallback(
     ({ item }) => (
@@ -147,10 +144,7 @@ export function WeekSelector({
     ),
     [screenWidth, selectedDate, today, onSelectDate, currentMonth],
   );
-  const keyExtractor = useCallback(
-    (item: WeekData) => item.weekStart.toISODate()!,
-    [],
-  );
+  const keyExtractor = (item: WeekData) => item.weekStart.toISODate()!;
   return (
     <View className="mb-4">
       <FlatList

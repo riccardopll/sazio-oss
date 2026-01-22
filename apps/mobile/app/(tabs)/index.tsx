@@ -1,18 +1,12 @@
 import { useUser } from "@clerk/clerk-expo";
-import {
-  Text,
-  View,
-  RefreshControl,
-  ScrollView,
-  ActivityIndicator,
-} from "react-native";
+import { Text, View, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { trpc } from "@/lib/trpc";
 import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
 import { GoalCard } from "@/components/GoalCard";
 import { GoalSheet, type GoalSheetRef } from "@/components/GoalSheet";
-import { useCallback, useState, useMemo, useRef } from "react";
+import { useState, useMemo, useRef } from "react";
 import { DateTime } from "luxon";
 import { keepPreviousData } from "@tanstack/react-query";
 
@@ -22,7 +16,6 @@ function getWeekStart(date: DateTime): DateTime {
 
 export default function Dashboard() {
   const { user } = useUser();
-  const [refreshing, setRefreshing] = useState(false);
   const [selectedDate, setSelectedDate] = useState(() =>
     DateTime.now().startOf("day"),
   );
@@ -32,65 +25,26 @@ export default function Dashboard() {
     [selectedDate],
   );
   const timezone = DateTime.local().zoneName;
-  const { data: currentGoal, refetch: refetchGoal } =
-    trpc.getCurrentGoal.useQuery(
-      {
-        date: selectedDate.toJSDate(),
-        timezone,
-      },
-      {
-        placeholderData: keepPreviousData,
-      },
-    );
-  const {
-    data: weekData,
-    refetch: refetchWeekData,
-    isFetching: isWeekDataFetching,
-  } = trpc.getWeeklySummary.useQuery(
+  const { data: currentGoal } = trpc.getCurrentGoal.useQuery(
     {
-      weekStartDate: weekStart,
+      date: selectedDate.toJSDate(),
       timezone,
     },
     {
       placeholderData: keepPreviousData,
     },
   );
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await Promise.all([refetchGoal(), refetchWeekData()]);
-    setRefreshing(false);
-  }, [refetchGoal, refetchWeekData]);
-  const handleSelectDate = useCallback((date: DateTime) => {
-    setSelectedDate(date);
-  }, []);
-  const handleGoalPress = useCallback(() => {
-    if (currentGoal?.id) {
-      goalSheetRef.current?.present({
-        goalId: currentGoal.id,
-        goalName: currentGoal.name ?? undefined,
-        startAt: currentGoal.startAt ?? undefined,
-        endAt: currentGoal.endAt ?? undefined,
-        proteinGoal: currentGoal.proteinGoal,
-        carbsGoal: currentGoal.carbsGoal,
-        fatGoal: currentGoal.fatGoal,
-      });
-    } else {
-      goalSheetRef.current?.present();
-    }
-  }, [currentGoal]);
-  const selectedDayData = useMemo(() => {
-    if (!weekData) return null;
-    const selectedIso = selectedDate.toISODate();
-    return (
-      weekData.find((d: { date: string }) => d.date === selectedIso) ?? null
+  const { data: weekData, isFetching: isWeekDataFetching } =
+    trpc.getWeeklySummary.useQuery(
+      {
+        weekStartDate: weekStart,
+        timezone,
+      },
+      {
+        placeholderData: keepPreviousData,
+      },
     );
-  }, [weekData, selectedDate]);
-  const hasLoadedOnce = useRef(false);
-  if (currentGoal && weekData) {
-    hasLoadedOnce.current = true;
-  }
-  const isInitialLoading = !hasLoadedOnce.current && !currentGoal && !weekData;
-  if (isInitialLoading) {
+  if (weekData === undefined || currentGoal === undefined) {
     return (
       <SafeAreaView
         className="flex-1 bg-gray-50 items-center justify-center"
@@ -100,6 +54,24 @@ export default function Dashboard() {
       </SafeAreaView>
     );
   }
+  const selectedDayData = weekData.find(
+    (day: { date: string }) => day.date === selectedDate.toISODate(),
+  );
+  const handleGoalPress = () => {
+    if (currentGoal) {
+      goalSheetRef.current?.present({
+        goalId: currentGoal.id,
+        goalName: currentGoal.name,
+        startAt: currentGoal.startAt,
+        endAt: currentGoal.endAt ?? undefined,
+        proteinGoal: currentGoal.proteinGoal,
+        carbsGoal: currentGoal.carbsGoal,
+        fatGoal: currentGoal.fatGoal,
+      });
+      return;
+    }
+    goalSheetRef.current?.present();
+  };
   return (
     <>
       <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
@@ -112,20 +84,14 @@ export default function Dashboard() {
             })}
           </Text>
           <Text className="text-2xl font-bold">
-            {user?.firstName ? `Hi, ${user.firstName}` : "Dashboard"}
+            {`Hi, ${user?.firstName ?? "Anon"}`}
           </Text>
         </View>
         <WeekSelector
           selectedDate={selectedDate}
-          onSelectDate={handleSelectDate}
+          onSelectDate={setSelectedDate}
         />
-        <ScrollView
-          className="flex-1"
-          contentContainerClassName="px-4 pb-4"
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }
-        >
+        <ScrollView className="flex-1" contentContainerClassName="px-4 pb-4">
           <NutritionProgressCard
             calories={{
               consumed: selectedDayData?.calories ?? 0,
@@ -143,10 +109,10 @@ export default function Dashboard() {
               consumed: selectedDayData?.protein ?? 0,
               goal: currentGoal?.proteinGoal ?? 0,
             }}
-            isLoading={isWeekDataFetching && !weekData}
+            isLoading={isWeekDataFetching}
           />
           <GoalCard
-            goal={currentGoal ?? null}
+            goal={currentGoal}
             onPress={handleGoalPress}
             className="mt-4"
           />
