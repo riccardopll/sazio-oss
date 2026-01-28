@@ -7,10 +7,6 @@
   "author": "Riccardo Palleschi",
   "type": "module",
   "scripts": {
-    "build": "pnpm -r build",
-    "deploy:server": "pnpm build && pnpm --filter @sazio-oss/server cf:deploy",
-    "dev:mobile": "pnpm --filter @sazio-oss/mobile ios",
-    "dev:server": "pnpm build && pnpm --filter @sazio-oss/server dev",
     "lint": "pnpm -r lint && pnpx sort-package-json",
     "prepare": "husky"
   },
@@ -24,5 +20,10 @@
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=10.0.0"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "better-sqlite3"
+    ]
   }
 }

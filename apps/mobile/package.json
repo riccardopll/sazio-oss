@@ -3,7 +3,6 @@
   "private": true,
   "main": "expo-router/entry",
   "scripts": {
-    "android": "expo run:android",
     "ios": "expo run:ios",
     "lint": "expo lint && prettier . --write && pnpx sort-package-json"
   },
