@@ -8,7 +8,8 @@
   "type": "module",
   "scripts": {
     "lint": "pnpm -r lint && pnpx sort-package-json",
-    "prepare": "husky"
+    "prepare": "husky",
+    "test": "pnpm -r test"
   },
   "devDependencies": {
     "husky": "^9.1.7",
@@ -16,7 +17,7 @@
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
-  "packageManager": "pnpm@10.28.0",
+  "packageManager": "pnpm@10.31.0",
   "engines": {
     "node": ">=20.0.0",
     "pnpm": ">=10.0.0"
