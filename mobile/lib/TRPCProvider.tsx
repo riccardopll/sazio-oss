@@ -1,33 +1,34 @@
 import { useAuth } from "@clerk/expo";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { httpBatchLink, loggerLink } from "@trpc/client";
-import { useState, useMemo } from "react";
-import { trpc } from "./trpc";
+import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
+import type { AppRouter } from "@sazio-oss/shared";
+import { useRef, useState } from "react";
+import { TRPCContextProvider } from "./trpc";
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
   const { getToken } = useAuth();
+  const getTokenRef = useRef(getToken);
+  getTokenRef.current = getToken;
   const [queryClient] = useState(() => new QueryClient());
-  const trpcClient = useMemo(
-    () =>
-      trpc.createClient({
-        links: [
-          loggerLink({ enabled: () => __DEV__ }),
-          httpBatchLink({
-            url:
-              (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787") +
-              "/trpc",
-            async headers() {
-              const token = await getToken();
-              return token ? { Authorization: `Bearer ${token}` } : {};
-            },
-          }),
-        ],
-      }),
-    [getToken],
+  const [trpcClient] = useState(() =>
+    createTRPCClient<AppRouter>({
+      links: [
+        loggerLink({ enabled: () => __DEV__ }),
+        httpBatchLink({
+          url:
+            (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787") +
+            "/trpc",
+          async headers() {
+            const token = await getTokenRef.current();
+            return token ? { Authorization: `Bearer ${token}` } : {};
+          },
+        }),
+      ],
+    }),
   );
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
+    <TRPCContextProvider queryClient={queryClient} trpcClient={trpcClient}>
       <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
-    </trpc.Provider>
+    </TRPCContextProvider>
   );
 }

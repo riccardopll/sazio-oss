@@ -1,20 +1,21 @@
 import { useUser } from "@clerk/expo";
 import { Text, View, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { trpc } from "@/lib/trpc";
+import { useTRPC } from "@/lib/trpc";
 import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
 import { GoalCard } from "@/components/GoalCard";
 import { GoalSheet, type GoalSheetRef } from "@/components/GoalSheet";
 import { useState, useMemo, useRef } from "react";
 import { DateTime } from "luxon";
-import { keepPreviousData } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 function getWeekStart(date: DateTime): DateTime {
   return date.startOf("week");
 }
 
 export default function Dashboard() {
+  const trpc = useTRPC();
   const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState(() =>
     DateTime.now().startOf("day"),
@@ -25,17 +26,19 @@ export default function Dashboard() {
     [selectedDate],
   );
   const timezone = DateTime.local().zoneName;
-  const { data: currentGoal } = trpc.getCurrentGoal.useQuery(
-    {
-      date: selectedDate.toJSDate(),
-      timezone,
-    },
-    {
-      placeholderData: keepPreviousData,
-    },
+  const { data: currentGoal } = useQuery(
+    trpc.getCurrentGoal.queryOptions(
+      {
+        date: selectedDate.toJSDate(),
+        timezone,
+      },
+      {
+        placeholderData: keepPreviousData,
+      },
+    ),
   );
-  const { data: weekData, isFetching: isWeekDataFetching } =
-    trpc.getWeeklySummary.useQuery(
+  const { data: weekData, isFetching: isWeekDataFetching } = useQuery(
+    trpc.getWeeklySummary.queryOptions(
       {
         weekStartDate: weekStart,
         timezone,
@@ -43,7 +46,8 @@ export default function Dashboard() {
       {
         placeholderData: keepPreviousData,
       },
-    );
+    ),
+  );
   if (weekData === undefined || currentGoal === undefined) {
     return (
       <SafeAreaView

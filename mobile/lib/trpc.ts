@@ -1,4 +1,8 @@
-import { createTRPCReact } from "@trpc/react-query";
+import { createTRPCContext } from "@trpc/tanstack-react-query";
 import type { AppRouter } from "@sazio-oss/shared";
 
-export const trpc = createTRPCReact<AppRouter>();
+export const {
+  TRPCProvider: TRPCContextProvider,
+  useTRPC,
+  useTRPCClient,
+} = createTRPCContext<AppRouter>();

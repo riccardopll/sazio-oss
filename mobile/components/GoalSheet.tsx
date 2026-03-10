@@ -17,7 +17,8 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
-import { trpc } from "@/lib/trpc";
+import { useTRPC } from "@/lib/trpc";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 
 export type GoalSheetParams = {
@@ -36,6 +37,8 @@ export type GoalSheetRef = {
 };
 
 export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
+  const trpc = useTRPC();
+  const queryClient = useQueryClient();
   const sheetRef = useRef<TrueSheet>(null);
   const [params, setParams] = useState<GoalSheetParams>({});
   const isEditing = params.goalId != null;
@@ -91,25 +94,30 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
     params.carbsGoal,
     params.fatGoal,
   ]);
-  const utils = trpc.useUtils();
-  const createGoal = trpc.createGoal.useMutation({
-    onSuccess: () => {
-      utils.getCurrentGoal.invalidate();
-      sheetRef.current?.dismiss();
-    },
-  });
-  const updateGoal = trpc.updateGoal.useMutation({
-    onSuccess: () => {
-      utils.getCurrentGoal.invalidate();
-      sheetRef.current?.dismiss();
-    },
-  });
-  const deleteGoal = trpc.deleteGoal.useMutation({
-    onSuccess: () => {
-      utils.getCurrentGoal.invalidate();
-      sheetRef.current?.dismiss();
-    },
-  });
+  const createGoal = useMutation(
+    trpc.createGoal.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.getCurrentGoal.pathFilter());
+        sheetRef.current?.dismiss();
+      },
+    }),
+  );
+  const updateGoal = useMutation(
+    trpc.updateGoal.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.getCurrentGoal.pathFilter());
+        sheetRef.current?.dismiss();
+      },
+    }),
+  );
+  const deleteGoal = useMutation(
+    trpc.deleteGoal.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries(trpc.getCurrentGoal.pathFilter());
+        sheetRef.current?.dismiss();
+      },
+    }),
+  );
   const handleSave = () => {
     const proteinValue = parseInt(protein, 10);
     const carbsValue = parseInt(carbs, 10);

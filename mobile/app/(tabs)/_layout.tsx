@@ -1,6 +1,6 @@
 import { useAuth } from "@clerk/expo";
 import { Redirect } from "expo-router";
-import { NativeTabs, Icon, Label } from "expo-router/unstable-native-tabs";
+import { NativeTabs } from "expo-router/unstable-native-tabs";
 
 export default function TabsLayout() {
   const { isSignedIn, isLoaded } = useAuth();
@@ -13,16 +13,22 @@ export default function TabsLayout() {
   return (
     <NativeTabs>
       <NativeTabs.Trigger name="index">
-        <Icon sf={{ default: "chart.pie", selected: "chart.pie.fill" }} />
-        <Label>Dashboard</Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "chart.pie", selected: "chart.pie.fill" }}
+        />
+        <NativeTabs.Trigger.Label>Dashboard</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="log">
-        <Icon sf={{ default: "plus.circle", selected: "plus.circle.fill" }} />
-        <Label>Log</Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "plus.circle", selected: "plus.circle.fill" }}
+        />
+        <NativeTabs.Trigger.Label>Log</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
       <NativeTabs.Trigger name="settings">
-        <Icon sf={{ default: "gearshape", selected: "gearshape.fill" }} />
-        <Label>Settings</Label>
+        <NativeTabs.Trigger.Icon
+          sf={{ default: "gearshape", selected: "gearshape.fill" }}
+        />
+        <NativeTabs.Trigger.Label>Settings</NativeTabs.Trigger.Label>
       </NativeTabs.Trigger>
     </NativeTabs>
   );

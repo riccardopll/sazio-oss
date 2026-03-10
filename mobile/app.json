@@ -6,7 +6,6 @@
     "orientation": "portrait",
     "scheme": "saziooss",
     "userInterfaceStyle": "automatic",
-    "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.anonymous.sazio-oss"
@@ -15,7 +14,7 @@
       "adaptiveIcon": {
         "backgroundColor": "#ffffff"
       },
-      "edgeToEdgeEnabled": true
+      "package": "com.anonymous.saziooss"
     },
     "web": {
       "bundler": "metro",
@@ -23,8 +22,11 @@
     },
     "plugins": [
       "expo-router",
+      "@clerk/expo",
       "@react-native-community/datetimepicker",
-      "expo-web-browser"
+      "expo-web-browser",
+      "expo-image",
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true
