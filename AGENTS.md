@@ -5,10 +5,13 @@ Nutrition/macro tracking app. pnpm monorepo: Expo mobile app, Hono/Cloudflare Wo
 ## Commands
 
 ```bash
-pnpm --filter @sazio-oss/shared build                # Build API package
-pnpm lint                                         # Lint and format all
-pnpm --filter @sazio-oss/server db:migrate:local  # Run migrations (local)
+pnpm --filter @sazio-oss/shared build               # Build API package
+pnpm --filter @sazio-oss/server db:migrate:local    # Run migrations (local)
 ```
+
+## Workflow
+
+- After modifying any TypeScript file, run `pnpm typecheck` and `pnpm lint`.
 
 ## Domain Knowledge
 
