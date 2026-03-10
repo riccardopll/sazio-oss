@@ -1,25 +1,20 @@
 import { View, type ViewProps } from "react-native";
-import { GlassView } from "expo-glass-effect";
+import { mobileTheme } from "@/lib/theme";
 
 export function DashboardCard({ children, className, ...props }: ViewProps) {
   return (
     <View
-      className={`rounded-[28px] overflow-hidden ${className ?? ""}`}
+      className={`overflow-hidden rounded-[28px] border border-border-subtle bg-surface-card ${className ?? ""}`}
       style={{
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 8 },
-        shadowOpacity: 0.08,
-        shadowRadius: 24,
-        elevation: 8,
+        shadowColor: mobileTheme.surface.app,
+        shadowOffset: { width: 0, height: 18 },
+        shadowOpacity: 0.36,
+        shadowRadius: 28,
+        elevation: 14,
       }}
       {...props}
     >
-      <GlassView
-        className="rounded-[28px] overflow-hidden border border-white/20"
-        glassEffectStyle="regular"
-      >
-        <View className="p-5">{children}</View>
-      </GlassView>
+      <View className="p-5">{children}</View>
     </View>
   );
 }

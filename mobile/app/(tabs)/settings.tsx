@@ -1,20 +1,36 @@
 import { useUser } from "@clerk/expo";
 import { View, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { DashboardCard } from "@/components/DashboardCard";
 import { SignOutButton } from "@/components/SignOutButton";
 
 export default function Settings() {
   const { user } = useUser();
   return (
-    <SafeAreaView className="flex-1">
-      <View className="flex-1 items-center pt-12">
-        <Text className="text-2xl font-bold text-gray-900">
-          {user?.firstName}
+    <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
+      <View className="flex-1 px-5 pt-4">
+        <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
+          Settings
         </Text>
-        <Text className="text-base text-gray-500 mt-1">
-          {user?.primaryEmailAddress?.emailAddress}
+        <Text className="mt-2 text-3xl font-bold text-text-primary">
+          {user?.firstName ?? "Account"}
         </Text>
-        <View className="mt-8">
+        <Text className="mt-2 text-base text-text-secondary">
+          Manage profile and session preferences.
+        </Text>
+        <DashboardCard className="mt-6">
+          <Text className="text-lg font-semibold text-text-primary">
+            Profile
+          </Text>
+          <Text className="mt-3 text-base text-text-secondary">
+            {user?.primaryEmailAddress?.emailAddress}
+          </Text>
+          <Text className="mt-4 text-sm leading-6 text-text-muted">
+            The settings area now follows the same opaque graphite grouping used
+            in the references.
+          </Text>
+        </DashboardCard>
+        <View className="mt-6">
           <SignOutButton />
         </View>
       </View>

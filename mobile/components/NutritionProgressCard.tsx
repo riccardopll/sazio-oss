@@ -1,12 +1,13 @@
 import { View, ActivityIndicator } from "react-native";
+import { mobileTheme } from "@/lib/theme";
 import { DashboardCard } from "./DashboardCard";
 import { NutritionBar } from "./NutritionBar";
 
 const NUTRITION_COLORS = {
-  calories: "#2C2C2E",
-  carbs: "#30D158",
-  fat: "#FFD60A",
-  protein: "#FF453A",
+  calories: mobileTheme.nutrition.calories,
+  carbs: mobileTheme.nutrition.carbs,
+  fat: mobileTheme.nutrition.fat,
+  protein: mobileTheme.nutrition.protein,
 } as const;
 
 interface NutritionData {
@@ -33,7 +34,7 @@ export function NutritionProgressCard({
     return (
       <DashboardCard>
         <View className="items-center justify-center py-8">
-          <ActivityIndicator size="large" />
+          <ActivityIndicator size="large" color={mobileTheme.state.loading} />
         </View>
       </DashboardCard>
     );

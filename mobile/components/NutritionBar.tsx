@@ -38,7 +38,7 @@ export function NutritionBar({
   return (
     <View className="gap-2">
       <View className="flex-row justify-between items-center">
-        <Text className="text-base text-text-primary">{label}</Text>
+        <Text className="text-base text-text-secondary">{label}</Text>
         <Text className="text-base font-semibold tabular-nums text-text-primary">
           {formatNumber(consumed)} / {formatNumber(goal)}
           {unit}

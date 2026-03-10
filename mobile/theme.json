@@ -1,0 +1,37 @@
+{
+  "colors": {
+    "surface": {
+      "app": "#000000",
+      "card": "#121214",
+      "sheet": "#0E0E10",
+      "input": "#19191C",
+      "tabBar": "rgba(18, 18, 20, 0.94)",
+      "raised": "#202024"
+    },
+    "text": {
+      "primary": "#F5F5F7",
+      "secondary": "#C9C9CE",
+      "muted": "#8B8B92",
+      "inverse": "#000000"
+    },
+    "border": {
+      "subtle": "rgba(255, 255, 255, 0.08)",
+      "strong": "rgba(255, 255, 255, 0.16)"
+    },
+    "accent": {
+      "brand": "#7C5CFA",
+      "soft": "#6F86FF"
+    },
+    "nutrition": {
+      "calories": "#F59E0B",
+      "carbs": "#34D399",
+      "fat": "#FACC15",
+      "protein": "#FB7185"
+    },
+    "state": {
+      "destructive": "#FF5D73",
+      "success": "#34D399",
+      "loading": "#E5E7EB"
+    }
+  }
+}

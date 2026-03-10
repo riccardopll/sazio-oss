@@ -2,6 +2,7 @@ import { useUser } from "@clerk/expo";
 import { Text, View, ScrollView, ActivityIndicator } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { useTRPC } from "@/lib/trpc";
+import { mobileTheme } from "@/lib/theme";
 import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
 import { GoalCard } from "@/components/GoalCard";
@@ -51,10 +52,10 @@ export default function Dashboard() {
   if (weekData === undefined || currentGoal === undefined) {
     return (
       <SafeAreaView
-        className="flex-1 bg-gray-50 items-center justify-center"
+        className="flex-1 items-center justify-center bg-surface-app"
         edges={["top"]}
       >
-        <ActivityIndicator size="large" />
+        <ActivityIndicator size="large" color={mobileTheme.state.loading} />
       </SafeAreaView>
     );
   }
@@ -78,24 +79,27 @@ export default function Dashboard() {
   };
   return (
     <>
-      <SafeAreaView className="flex-1 bg-gray-50" edges={["top"]}>
-        <View className="px-4 pt-2">
-          <Text className="text-sm text-gray-500">
+      <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
+        <View className="px-5 pt-4">
+          <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
             {selectedDate.toLocaleString({
               weekday: "long",
               month: "long",
               day: "numeric",
             })}
           </Text>
-          <Text className="text-2xl font-bold">
+          <Text className="mt-2 text-3xl font-bold text-text-primary">
             {`Hi, ${user?.firstName ?? "Anon"}`}
+          </Text>
+          <Text className="mt-2 max-w-[280px] text-base leading-6 text-text-secondary">
+            Your daily macros, rebuilt around a true-black dashboard.
           </Text>
         </View>
         <WeekSelector
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
         />
-        <ScrollView className="flex-1" contentContainerClassName="px-4 pb-4">
+        <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8">
           <NutritionProgressCard
             calories={{
               consumed: selectedDayData?.calories ?? 0,

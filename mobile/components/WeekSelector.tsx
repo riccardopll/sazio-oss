@@ -78,16 +78,16 @@ const DayButton = memo(function DayButton({
   }));
   const dayOfWeek = date.weekday - 1;
   const backgroundClass = isSelected
-    ? "bg-gray-900"
+    ? "bg-white"
     : isToday
-      ? "border-2 border-gray-300 bg-gray-100"
+      ? "border border-border-strong bg-surface-raised"
       : isDifferentMonth
-        ? "bg-gray-200"
-        : "bg-gray-100";
+        ? "bg-surface-app"
+        : "bg-surface-card";
   const textClass = isSelected
-    ? "text-white"
+    ? "text-text-inverse"
     : isDifferentMonth
-      ? "text-gray-400"
+      ? "text-text-muted"
       : "text-text-primary";
   return (
     <AnimatedPressable
@@ -101,7 +101,7 @@ const DayButton = memo(function DayButton({
       accessibilityState={{ selected: isSelected }}
     >
       <Text
-        className={`text-xs mb-1 ${isDifferentMonth ? "text-gray-400" : "text-text-secondary"}`}
+        className={`mb-1 text-xs ${isDifferentMonth ? "text-text-muted" : "text-text-secondary"}`}
       >
         {DAY_NAMES[dayOfWeek]}
       </Text>

@@ -19,6 +19,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { useTRPC } from "@/lib/trpc";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { mobileTheme } from "@/lib/theme";
 import { DateTime } from "luxon";
 
 export type GoalSheetParams = {
@@ -172,18 +173,18 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
   );
   return (
     <TrueSheet ref={sheetRef} detents={["auto", 0.6]} grabber>
-      <View className="flex-1 bg-white">
+      <View className="flex-1 bg-surface-sheet">
         <SafeAreaView className="flex-1" edges={["bottom"]}>
-          <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
+          <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
             <Pressable onPress={handleClose}>
-              <Text className="text-blue-500 text-base">Cancel</Text>
+              <Text className="text-base text-text-secondary">Cancel</Text>
             </Pressable>
-            <Text className="text-lg font-semibold">
+            <Text className="text-lg font-semibold text-text-primary">
               {isEditing ? "Edit Goal" : "New Goal"}
             </Text>
             <Pressable onPress={handleSave} disabled={isSaving}>
               <Text
-                className={`text-base font-semibold ${isSaving ? "text-gray-400" : "text-blue-500"}`}
+                className={`text-base font-semibold ${isSaving ? "text-text-muted" : "text-text-primary"}`}
               >
                 {isSaving ? "Saving..." : "Save"}
               </Text>
@@ -191,17 +192,19 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
           </View>
           <ScrollView className="flex-1 px-4" contentContainerClassName="pb-8">
             <View className="mt-6">
-              <Text className="text-sm font-medium text-gray-500 uppercase mb-2">
+              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
                 Goal Name
               </Text>
               <TextInput
                 value={name}
                 onChangeText={setName}
                 placeholder="Goal name (optional)"
-                placeholderTextColor="#9CA3AF"
-                className="text-base"
+                placeholderTextColor={mobileTheme.text.muted}
+                className="text-base text-text-primary"
                 style={{
-                  backgroundColor: "#f3f4f6",
+                  backgroundColor: mobileTheme.surface.input,
+                  borderColor: mobileTheme.border.subtle,
+                  borderWidth: 1,
                   borderRadius: 12,
                   paddingHorizontal: 16,
                   height: 48,
@@ -209,28 +212,49 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
               />
             </View>
             <View className="mt-6">
-              <Text className="text-sm font-medium text-gray-500 uppercase mb-2">
+              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
                 Dates
               </Text>
-              <View className="bg-gray-100 rounded-xl">
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <Text className="text-base">Start Date</Text>
+              <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                  <Text className="text-base text-text-primary">
+                    Start Date
+                  </Text>
                   <DateTimePicker
                     value={startDate}
                     mode="date"
+                    themeVariant="dark"
                     onChange={(_, date) => date && setStartDate(date)}
                   />
                 </View>
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <Text className="text-base">Ongoing (no end date)</Text>
-                  <Switch value={isOngoing} onValueChange={setIsOngoing} />
+                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                  <Text className="text-base text-text-primary">
+                    Ongoing (no end date)
+                  </Text>
+                  <Switch
+                    value={isOngoing}
+                    onValueChange={setIsOngoing}
+                    ios_backgroundColor={mobileTheme.surface.raised}
+                    thumbColor={
+                      isOngoing
+                        ? mobileTheme.text.primary
+                        : mobileTheme.text.secondary
+                    }
+                    trackColor={{
+                      false: mobileTheme.surface.raised,
+                      true: mobileTheme.border.strong,
+                    }}
+                  />
                 </View>
                 {!isOngoing && (
                   <View className="flex-row items-center justify-between px-4 py-3">
-                    <Text className="text-base">End Date</Text>
+                    <Text className="text-base text-text-primary">
+                      End Date
+                    </Text>
                     <DateTimePicker
                       value={endDate ?? new Date()}
                       mode="date"
+                      themeVariant="dark"
                       onChange={(_, date) => date && setEndDate(date)}
                     />
                   </View>
@@ -238,41 +262,43 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
               </View>
             </View>
             <View className="mt-6">
-              <Text className="text-sm font-medium text-gray-500 uppercase mb-2">
+              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
                 Daily Targets
               </Text>
-              <View className="bg-gray-100 rounded-xl overflow-hidden">
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <Text className="text-base">Protein (g)</Text>
+              <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                  <Text className="text-base text-text-primary">
+                    Protein (g)
+                  </Text>
                   <TextInput
                     value={protein}
                     onChangeText={setProtein}
                     placeholder="0"
                     keyboardType="numeric"
-                    className="text-base text-right min-w-[80px]"
-                    placeholderTextColor="#9CA3AF"
+                    className="min-w-[80px] text-right text-base text-text-primary"
+                    placeholderTextColor={mobileTheme.text.muted}
                   />
                 </View>
-                <View className="flex-row items-center justify-between px-4 py-3 border-b border-gray-200">
-                  <Text className="text-base">Carbs (g)</Text>
+                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                  <Text className="text-base text-text-primary">Carbs (g)</Text>
                   <TextInput
                     value={carbs}
                     onChangeText={setCarbs}
                     placeholder="0"
                     keyboardType="numeric"
-                    className="text-base text-right min-w-[80px]"
-                    placeholderTextColor="#9CA3AF"
+                    className="min-w-[80px] text-right text-base text-text-primary"
+                    placeholderTextColor={mobileTheme.text.muted}
                   />
                 </View>
                 <View className="flex-row items-center justify-between px-4 py-3">
-                  <Text className="text-base">Fat (g)</Text>
+                  <Text className="text-base text-text-primary">Fat (g)</Text>
                   <TextInput
                     value={fat}
                     onChangeText={setFat}
                     placeholder="0"
                     keyboardType="numeric"
-                    className="text-base text-right min-w-[80px]"
-                    placeholderTextColor="#9CA3AF"
+                    className="min-w-[80px] text-right text-base text-text-primary"
+                    placeholderTextColor={mobileTheme.text.muted}
                   />
                 </View>
               </View>
@@ -283,7 +309,7 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
                 disabled={isSaving}
                 className="mt-8 mb-4"
               >
-                <Text className="text-red-500 text-center text-base font-medium">
+                <Text className="text-center text-base font-medium text-state-destructive">
                   Delete Goal
                 </Text>
               </Pressable>
