@@ -12,6 +12,7 @@ pnpm --filter @sazio-oss/server db:migrate:local    # Run migrations (local)
 ## Workflow
 
 - After modifying any TypeScript file, run `pnpm typecheck` and `pnpm lint`.
+- The `revolut/` folder contains image examples of the desired app style.
 
 ## Domain Knowledge
 
