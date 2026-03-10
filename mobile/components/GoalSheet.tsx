@@ -37,6 +37,10 @@ export type GoalSheetRef = {
   dismiss: () => void;
 };
 
+function sanitizeWholeNumberInput(value: string) {
+  return value.replace(/\D+/g, "");
+}
+
 export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
@@ -171,152 +175,173 @@ export const GoalSheet = forwardRef<GoalSheetRef>(function GoalSheet(_, ref) {
   const isSaving = [createGoal, updateGoal, deleteGoal].some(
     (m) => m.isPending,
   );
+  const numericInputStyle = {
+    color: mobileTheme.text.primary,
+    fontSize: 16,
+    paddingVertical: 0,
+    textAlign: "right",
+  } as const;
   return (
-    <TrueSheet ref={sheetRef} detents={["auto", 0.6]} grabber>
-      <View className="flex-1 bg-surface-sheet">
-        <SafeAreaView className="flex-1" edges={["bottom"]}>
-          <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
-            <Pressable onPress={handleClose}>
-              <Text className="text-base text-text-secondary">Cancel</Text>
-            </Pressable>
-            <Text className="text-lg font-semibold text-text-primary">
-              {isEditing ? "Edit Goal" : "New Goal"}
+    <TrueSheet
+      ref={sheetRef}
+      detents={[0.72, 0.92]}
+      grabber
+      scrollable
+      header={
+        <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
+          <Pressable onPress={handleClose}>
+            <Text className="text-base text-text-secondary">Cancel</Text>
+          </Pressable>
+          <Text className="text-lg font-semibold text-text-primary">
+            {isEditing ? "Edit Goal" : "New Goal"}
+          </Text>
+          <Pressable onPress={handleSave} disabled={isSaving}>
+            <Text
+              className={`text-base font-semibold ${isSaving ? "text-text-muted" : "text-text-primary"}`}
+            >
+              {isSaving ? "Saving..." : "Save"}
             </Text>
-            <Pressable onPress={handleSave} disabled={isSaving}>
-              <Text
-                className={`text-base font-semibold ${isSaving ? "text-text-muted" : "text-text-primary"}`}
-              >
-                {isSaving ? "Saving..." : "Save"}
-              </Text>
-            </Pressable>
+          </Pressable>
+        </View>
+      }
+    >
+      <SafeAreaView className="flex-1 bg-surface-sheet" edges={["bottom"]}>
+        <ScrollView
+          className="flex-1 px-4"
+          contentContainerClassName="pb-8"
+          nestedScrollEnabled
+        >
+          <View className="mt-6">
+            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+              Goal Name
+            </Text>
+            <TextInput
+              value={name}
+              onChangeText={setName}
+              placeholder="Goal name (optional)"
+              placeholderTextColor={mobileTheme.text.muted}
+              style={{
+                backgroundColor: mobileTheme.surface.input,
+                borderColor: mobileTheme.border.subtle,
+                borderWidth: 1,
+                borderRadius: 12,
+                color: mobileTheme.text.primary,
+                fontSize: 16,
+                height: 48,
+                paddingHorizontal: 16,
+                paddingVertical: 0,
+              }}
+            />
           </View>
-          <ScrollView className="flex-1 px-4" contentContainerClassName="pb-8">
-            <View className="mt-6">
-              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-                Goal Name
-              </Text>
-              <TextInput
-                value={name}
-                onChangeText={setName}
-                placeholder="Goal name (optional)"
-                placeholderTextColor={mobileTheme.text.muted}
-                className="text-base text-text-primary"
-                style={{
-                  backgroundColor: mobileTheme.surface.input,
-                  borderColor: mobileTheme.border.subtle,
-                  borderWidth: 1,
-                  borderRadius: 12,
-                  paddingHorizontal: 16,
-                  height: 48,
-                }}
-              />
-            </View>
-            <View className="mt-6">
-              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-                Dates
-              </Text>
-              <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
-                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                  <Text className="text-base text-text-primary">
-                    Start Date
-                  </Text>
+          <View className="mt-6">
+            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+              Dates
+            </Text>
+            <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                <Text className="text-base text-text-primary">Start Date</Text>
+                <DateTimePicker
+                  value={startDate}
+                  mode="date"
+                  themeVariant="dark"
+                  onChange={(_, date) => date && setStartDate(date)}
+                />
+              </View>
+              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                <Text className="text-base text-text-primary">Ongoing</Text>
+                <Switch
+                  value={isOngoing}
+                  onValueChange={setIsOngoing}
+                  ios_backgroundColor={mobileTheme.surface.raised}
+                  thumbColor={
+                    isOngoing
+                      ? mobileTheme.text.primary
+                      : mobileTheme.text.secondary
+                  }
+                  trackColor={{
+                    false: mobileTheme.surface.raised,
+                    true: mobileTheme.border.strong,
+                  }}
+                />
+              </View>
+              {!isOngoing && (
+                <View className="flex-row items-center justify-between px-4 py-3">
+                  <Text className="text-base text-text-primary">End Date</Text>
                   <DateTimePicker
-                    value={startDate}
+                    value={endDate ?? new Date()}
                     mode="date"
                     themeVariant="dark"
-                    onChange={(_, date) => date && setStartDate(date)}
+                    onChange={(_, date) => date && setEndDate(date)}
                   />
                 </View>
-                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                  <Text className="text-base text-text-primary">
-                    Ongoing (no end date)
-                  </Text>
-                  <Switch
-                    value={isOngoing}
-                    onValueChange={setIsOngoing}
-                    ios_backgroundColor={mobileTheme.surface.raised}
-                    thumbColor={
-                      isOngoing
-                        ? mobileTheme.text.primary
-                        : mobileTheme.text.secondary
-                    }
-                    trackColor={{
-                      false: mobileTheme.surface.raised,
-                      true: mobileTheme.border.strong,
-                    }}
-                  />
-                </View>
-                {!isOngoing && (
-                  <View className="flex-row items-center justify-between px-4 py-3">
-                    <Text className="text-base text-text-primary">
-                      End Date
-                    </Text>
-                    <DateTimePicker
-                      value={endDate ?? new Date()}
-                      mode="date"
-                      themeVariant="dark"
-                      onChange={(_, date) => date && setEndDate(date)}
-                    />
-                  </View>
-                )}
+              )}
+            </View>
+          </View>
+          <View className="mt-6">
+            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+              Daily Targets
+            </Text>
+            <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                <Text className="text-base text-text-primary">Protein (g)</Text>
+                <TextInput
+                  value={protein}
+                  onChangeText={(value) =>
+                    setProtein(sanitizeWholeNumberInput(value))
+                  }
+                  placeholder="0"
+                  inputMode="numeric"
+                  keyboardType="number-pad"
+                  className="min-w-[80px]"
+                  placeholderTextColor={mobileTheme.text.muted}
+                  style={numericInputStyle}
+                />
+              </View>
+              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+                <Text className="text-base text-text-primary">Carbs (g)</Text>
+                <TextInput
+                  value={carbs}
+                  onChangeText={(value) =>
+                    setCarbs(sanitizeWholeNumberInput(value))
+                  }
+                  placeholder="0"
+                  inputMode="numeric"
+                  keyboardType="number-pad"
+                  className="min-w-[80px]"
+                  placeholderTextColor={mobileTheme.text.muted}
+                  style={numericInputStyle}
+                />
+              </View>
+              <View className="flex-row items-center justify-between px-4 py-3">
+                <Text className="text-base text-text-primary">Fat (g)</Text>
+                <TextInput
+                  value={fat}
+                  onChangeText={(value) =>
+                    setFat(sanitizeWholeNumberInput(value))
+                  }
+                  placeholder="0"
+                  inputMode="numeric"
+                  keyboardType="number-pad"
+                  className="min-w-[80px]"
+                  placeholderTextColor={mobileTheme.text.muted}
+                  style={numericInputStyle}
+                />
               </View>
             </View>
-            <View className="mt-6">
-              <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-                Daily Targets
+          </View>
+          {isEditing && (
+            <Pressable
+              onPress={handleDelete}
+              disabled={isSaving}
+              className="mt-8 mb-4"
+            >
+              <Text className="text-center text-base font-medium text-state-destructive">
+                Delete Goal
               </Text>
-              <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
-                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                  <Text className="text-base text-text-primary">
-                    Protein (g)
-                  </Text>
-                  <TextInput
-                    value={protein}
-                    onChangeText={setProtein}
-                    placeholder="0"
-                    keyboardType="numeric"
-                    className="min-w-[80px] text-right text-base text-text-primary"
-                    placeholderTextColor={mobileTheme.text.muted}
-                  />
-                </View>
-                <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                  <Text className="text-base text-text-primary">Carbs (g)</Text>
-                  <TextInput
-                    value={carbs}
-                    onChangeText={setCarbs}
-                    placeholder="0"
-                    keyboardType="numeric"
-                    className="min-w-[80px] text-right text-base text-text-primary"
-                    placeholderTextColor={mobileTheme.text.muted}
-                  />
-                </View>
-                <View className="flex-row items-center justify-between px-4 py-3">
-                  <Text className="text-base text-text-primary">Fat (g)</Text>
-                  <TextInput
-                    value={fat}
-                    onChangeText={setFat}
-                    placeholder="0"
-                    keyboardType="numeric"
-                    className="min-w-[80px] text-right text-base text-text-primary"
-                    placeholderTextColor={mobileTheme.text.muted}
-                  />
-                </View>
-              </View>
-            </View>
-            {isEditing && (
-              <Pressable
-                onPress={handleDelete}
-                disabled={isSaving}
-                className="mt-8 mb-4"
-              >
-                <Text className="text-center text-base font-medium text-state-destructive">
-                  Delete Goal
-                </Text>
-              </Pressable>
-            )}
-          </ScrollView>
-        </SafeAreaView>
-      </View>
+            </Pressable>
+          )}
+        </ScrollView>
+      </SafeAreaView>
     </TrueSheet>
   );
 });
