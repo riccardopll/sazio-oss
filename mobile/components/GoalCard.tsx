@@ -21,42 +21,53 @@ export function GoalCard({ goal, onPress, className }: GoalCardProps) {
   return (
     <Pressable onPress={onPress} className={className}>
       <DashboardCard>
-        <View className="flex-row items-center justify-between">
-          <Text className="text-base font-semibold text-text-primary">
-            Goal
-          </Text>
-          {goal && (
-            <Text className="text-sm text-text-muted">
-              {formatDateRange(goal.startAt, goal.endAt)}
-            </Text>
-          )}
-        </View>
         {goal ? (
-          <View className="mt-3">
-            <Text className="text-lg font-medium text-text-primary">
-              {goal.name}
-            </Text>
-            <View className="flex-row mt-2 gap-4">
-              <View className="items-center">
-                <Text className="text-xs text-text-muted">Protein</Text>
+          <View className="gap-3">
+            <View className="flex-row items-center justify-between gap-4">
+              <View className="flex-1">
+                <Text className="text-base font-semibold text-text-primary">
+                  Goal
+                </Text>
+                <Text
+                  className="mt-0.5 text-sm text-text-secondary"
+                  numberOfLines={1}
+                >
+                  {goal.name}
+                </Text>
+              </View>
+              <Text className="text-sm text-text-muted">
+                {formatDateRange(goal.startAt, goal.endAt)}
+              </Text>
+            </View>
+            <View className="flex-row flex-wrap items-center gap-x-4 gap-y-2">
+              <View className="flex-row items-baseline gap-1">
+                <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
+                  Protein
+                </Text>
                 <Text className="text-sm font-semibold text-nutrition-protein">
                   {goal.proteinGoal}g
                 </Text>
               </View>
-              <View className="items-center">
-                <Text className="text-xs text-text-muted">Carbs</Text>
+              <View className="flex-row items-baseline gap-1">
+                <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
+                  Carbs
+                </Text>
                 <Text className="text-sm font-semibold text-nutrition-carbs">
                   {goal.carbsGoal}g
                 </Text>
               </View>
-              <View className="items-center">
-                <Text className="text-xs text-text-muted">Fat</Text>
+              <View className="flex-row items-baseline gap-1">
+                <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
+                  Fat
+                </Text>
                 <Text className="text-sm font-semibold text-nutrition-fat">
                   {goal.fatGoal}g
                 </Text>
               </View>
-              <View className="items-center">
-                <Text className="text-xs text-text-muted">Calories</Text>
+              <View className="flex-row items-baseline gap-1">
+                <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
+                  Calories
+                </Text>
                 <Text className="text-sm font-semibold text-nutrition-calories">
                   {goal.calorieGoal}
                 </Text>
@@ -64,7 +75,10 @@ export function GoalCard({ goal, onPress, className }: GoalCardProps) {
             </View>
           </View>
         ) : (
-          <View className="mt-3">
+          <View className="gap-2">
+            <Text className="text-base font-semibold text-text-primary">
+              Goal
+            </Text>
             <Text className="text-text-secondary">
               Tap to set your nutrition targets →
             </Text>

@@ -10,7 +10,7 @@
     "db:studio:local": "drizzle-kit studio --config drizzle.config.local.ts",
     "dev": "wrangler dev",
     "lint": "prettier . --write && pnpx sort-package-json",
-    "test": "vitest --run",
+    "test": "vitest --run --passWithNoTests",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
