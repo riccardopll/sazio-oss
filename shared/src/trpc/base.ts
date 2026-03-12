@@ -1,9 +1,8 @@
 import { initTRPC, TRPCError } from "@trpc/server";
-import { drizzle } from "drizzle-orm/d1";
-import * as schema from "../schema";
+import type { DB } from "../db";
 
 export interface BaseContext {
-  db: ReturnType<typeof drizzle<typeof schema>>;
+  db: DB;
   userId: string | undefined;
 }
 

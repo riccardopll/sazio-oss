@@ -1,9 +1,7 @@
 import { Hono } from "hono";
 import { cors } from "hono/cors";
 import { requestId } from "hono/request-id";
-import { drizzle } from "drizzle-orm/d1";
-import { appRouter, type BaseContext } from "@sazio-oss/shared";
-import * as schema from "@sazio-oss/shared/schema";
+import { appRouter, createDb, type BaseContext } from "@sazio-oss/shared";
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { verifyToken } from "@clerk/backend";
 import { log } from "./log";
@@ -57,7 +55,7 @@ app.all("/trpc/*", async (ctx) => {
     router: appRouter,
     createContext: () =>
       ({
-        db: drizzle(ctx.env.DB, { schema }),
+        db: createDb(ctx.env.DB),
         userId,
       }) satisfies BaseContext,
   });

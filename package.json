@@ -9,8 +9,8 @@
   "scripts": {
     "lint": "pnpm -r lint && pnpx sort-package-json",
     "prepare": "husky",
-    "test": "pnpm -r test",
-    "typecheck": "pnpm -r typecheck"
+    "test": "pnpm --filter @sazio-oss/shared build && pnpm -r test",
+    "typecheck": "pnpm --filter @sazio-oss/shared build && pnpm -r typecheck"
   },
   "devDependencies": {
     "husky": "^9.1.7",

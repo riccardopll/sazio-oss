@@ -5,6 +5,7 @@ import { goalProcedures } from "./trpc/goals";
 import { router } from "./trpc/base";
 
 export { type BaseContext } from "./trpc/base";
+export { createDb, type DB } from "./db";
 
 export const appRouter = router({
   ...foodProcedures,

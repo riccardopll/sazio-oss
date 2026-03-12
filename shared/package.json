@@ -7,6 +7,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./db": {
+      "types": "./dist/db.d.ts",
+      "default": "./dist/db.js"
+    },
     "./schema": {
       "types": "./dist/schema.d.ts",
       "default": "./dist/schema.js"
@@ -18,7 +22,6 @@
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "lint": "prettier . --write && pnpx sort-package-json",
-    "test": "vitest --run --config vitest.config.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
@@ -28,9 +31,6 @@
     "zod": "^4.3.5"
   },
   "devDependencies": {
-    "@types/better-sqlite3": "^7.6.13",
-    "@types/luxon": "^3.7.1",
-    "better-sqlite3": "^12.6.2",
-    "vitest": "^3.2.4"
+    "@types/luxon": "^3.7.1"
   }
 }

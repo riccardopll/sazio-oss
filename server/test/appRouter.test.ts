@@ -1,43 +1,22 @@
-import Database from "better-sqlite3";
+import { applyD1Migrations, env } from "cloudflare:test";
 import { eq } from "drizzle-orm";
-import { drizzle } from "drizzle-orm/better-sqlite3";
-import { readFileSync } from "node:fs";
-import path from "node:path";
-import { describe, expect, it, vi, afterEach } from "vitest";
-import { appRouter, type BaseContext } from "../src/index";
-import { foodLogs, foods } from "../src/schema";
-import * as schema from "../src/schema";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { appRouter, createDb, type BaseContext } from "@sazio-oss/shared";
+import { foodLogs, foods } from "@sazio-oss/shared/schema";
 
-type TestDatabase = ReturnType<typeof drizzle<typeof schema>>;
+type TestDB = BaseContext["db"];
+
+beforeAll(async () => {
+  await applyD1Migrations(env.DB, env.TEST_MIGRATIONS);
+});
 
 function createTestDatabase() {
-  const sqlite = new Database(":memory:");
-  const migrationsDir = decodeURIComponent(
-    path.join(new URL("../../server/drizzle/", import.meta.url).pathname),
-  );
-
-  sqlite.exec(
-    readFileSync(path.join(migrationsDir, "0000_red_killraven.sql"), {
-      encoding: "utf8",
-    }),
-  );
-  sqlite.exec(
-    readFileSync(
-      path.join(migrationsDir, "0001_powerful_serpent_society.sql"),
-      {
-        encoding: "utf8",
-      },
-    ),
-  );
-
-  const db = drizzle(sqlite, { schema });
-
-  return { sqlite, db };
+  return createDb(env.DB);
 }
 
-function createCaller(db: TestDatabase, userId = "user_1") {
+function createCaller(db: TestDB, userId = "user_1") {
   return appRouter.createCaller({
-    db: db as unknown as BaseContext["db"],
+    db,
     userId,
   });
 }
@@ -48,7 +27,7 @@ describe("appRouter food logging", () => {
   });
 
   it("createFood stores a user-scoped food", async () => {
-    const { sqlite, db } = createTestDatabase();
+    const db = createTestDatabase();
     const caller = createCaller(db);
 
     const createdFood = await caller.createFood({
@@ -60,20 +39,19 @@ describe("appRouter food logging", () => {
       fat: 0,
     });
 
-    const storedFood = db
+    const storedFood = await db
       .select()
       .from(foods)
       .where(eq(foods.id, createdFood.id))
-      .get();
+      .then((rows) => rows[0]);
 
     expect(createdFood.name).toBe("Greek Yogurt");
     expect(createdFood.servingUnits).toEqual([]);
     expect(storedFood?.userId).toBe("user_1");
-    sqlite.close();
   });
 
   it("listFoods returns global plus user foods and filters by search text", async () => {
-    const { sqlite, db } = createTestDatabase();
+    const db = createTestDatabase();
     const caller = createCaller(db);
 
     await db.insert(foods).values([
@@ -112,11 +90,10 @@ describe("appRouter food logging", () => {
       "Chia Pudding",
       "Chicken Breast",
     ]);
-    sqlite.close();
   });
 
   it("createFoodLog rejects invalid quantity and stores a valid log", async () => {
-    const { sqlite, db } = createTestDatabase();
+    const db = createTestDatabase();
     const caller = createCaller(db);
 
     const [food] = await db
@@ -147,22 +124,21 @@ describe("appRouter food logging", () => {
       quantity: 2,
     });
 
-    const storedLog = db
+    const storedLog = await db
       .select()
       .from(foodLogs)
       .where(eq(foodLogs.id, createdLog.id))
-      .get();
+      .then((rows) => rows[0]);
 
     expect(storedLog?.userId).toBe("user_1");
     expect(storedLog?.quantity).toBe(2);
     expect(storedLog?.createdAt).toBe(
       new Date("2026-03-10T10:30:00.000Z").getTime(),
     );
-    sqlite.close();
   });
 
   it("getDailyFoodLogs returns derived macros and calories", async () => {
-    const { sqlite, db } = createTestDatabase();
+    const db = createTestDatabase();
     const caller = createCaller(db);
 
     vi.useFakeTimers();
@@ -201,11 +177,10 @@ describe("appRouter food logging", () => {
       fat: 7.5,
       calories: 307.5,
     });
-    sqlite.close();
   });
 
   it("daily and weekly summaries reflect newly created logs", async () => {
-    const { sqlite, db } = createTestDatabase();
+    const db = createTestDatabase();
     const caller = createCaller(db);
 
     vi.useFakeTimers();
@@ -251,6 +226,5 @@ describe("appRouter food logging", () => {
       fat: 8,
       calories: 432,
     });
-    sqlite.close();
   });
 });
