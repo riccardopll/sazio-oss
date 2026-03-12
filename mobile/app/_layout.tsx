@@ -24,9 +24,7 @@ export default function RootLayout() {
           <Stack
             screenOptions={{
               headerShown: false,
-              contentStyle: { backgroundColor: mobileTheme.surface.app },
             }}
-            initialRouteName="(tabs)"
           >
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)" />

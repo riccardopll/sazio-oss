@@ -6,8 +6,8 @@ import { mobileTheme } from "@/lib/theme";
 import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
 import { GoalCard } from "@/components/GoalCard";
-import { GoalSheet, type GoalSheetRef } from "@/components/GoalSheet";
-import { useState, useMemo, useRef } from "react";
+import { GoalSheet, type GoalSheetParams } from "@/components/GoalSheet";
+import { useState, useMemo } from "react";
 import { DateTime } from "luxon";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
@@ -21,7 +21,8 @@ export default function Dashboard() {
   const [selectedDate, setSelectedDate] = useState(() =>
     DateTime.now().startOf("day"),
   );
-  const goalSheetRef = useRef<GoalSheetRef>(null);
+  const [goalSheetParams, setGoalSheetParams] = useState<GoalSheetParams>({});
+  const [isGoalSheetVisible, setIsGoalSheetVisible] = useState(false);
   const weekStart = useMemo(
     () => getWeekStart(selectedDate).toJSDate(),
     [selectedDate],
@@ -64,7 +65,7 @@ export default function Dashboard() {
   );
   const handleGoalPress = () => {
     if (currentGoal) {
-      goalSheetRef.current?.present({
+      setGoalSheetParams({
         goalId: currentGoal.id,
         goalName: currentGoal.name,
         startAt: currentGoal.startAt,
@@ -73,9 +74,10 @@ export default function Dashboard() {
         carbsGoal: currentGoal.carbsGoal,
         fatGoal: currentGoal.fatGoal,
       });
-      return;
+    } else {
+      setGoalSheetParams({});
     }
-    goalSheetRef.current?.present();
+    setIsGoalSheetVisible(true);
   };
   return (
     <>
@@ -99,7 +101,7 @@ export default function Dashboard() {
           selectedDate={selectedDate}
           onSelectDate={setSelectedDate}
         />
-        <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8">
+        <ScrollView className="flex-1" contentContainerClassName="px-5 pb-2">
           <NutritionProgressCard
             calories={{
               consumed: selectedDayData?.calories ?? 0,
@@ -126,7 +128,11 @@ export default function Dashboard() {
           />
         </ScrollView>
       </SafeAreaView>
-      <GoalSheet ref={goalSheetRef} />
+      <GoalSheet
+        visible={isGoalSheetVisible}
+        params={goalSheetParams}
+        onClose={() => setIsGoalSheetVisible(false)}
+      />
     </>
   );
 }

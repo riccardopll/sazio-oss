@@ -3,13 +3,6 @@ import { mobileTheme } from "@/lib/theme";
 import { DashboardCard } from "./DashboardCard";
 import { NutritionBar } from "./NutritionBar";
 
-const NUTRITION_COLORS = {
-  calories: mobileTheme.nutrition.calories,
-  carbs: mobileTheme.nutrition.carbs,
-  fat: mobileTheme.nutrition.fat,
-  protein: mobileTheme.nutrition.protein,
-} as const;
-
 interface NutritionData {
   consumed: number;
   goal: number;
@@ -46,27 +39,27 @@ export function NutritionProgressCard({
           label="Calories"
           consumed={calories.consumed}
           goal={calories.goal}
-          color={NUTRITION_COLORS.calories}
+          variant="calories"
         />
         <NutritionBar
           label="Carbs"
           consumed={carbs.consumed}
           goal={carbs.goal}
-          color={NUTRITION_COLORS.carbs}
+          variant="carbs"
           unit="g"
         />
         <NutritionBar
           label="Fats"
           consumed={fat.consumed}
           goal={fat.goal}
-          color={NUTRITION_COLORS.fat}
+          variant="fat"
           unit="g"
         />
         <NutritionBar
           label="Proteins"
           consumed={protein.consumed}
           goal={protein.goal}
-          color={NUTRITION_COLORS.protein}
+          variant="protein"
           unit="g"
         />
       </View>

@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useState } from "react";
 import {
   ActivityIndicator,
   Pressable,
@@ -13,9 +13,12 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { DashboardCard } from "@/components/DashboardCard";
 import {
   FoodCreateSheet,
-  type FoodCreateSheetRef,
+  type FoodCreateSheetParams,
 } from "@/components/FoodCreateSheet";
-import { FoodLogSheet, type FoodLogSheetRef } from "@/components/FoodLogSheet";
+import {
+  FoodLogSheet,
+  type FoodLogSheetParams,
+} from "@/components/FoodLogSheet";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 
@@ -25,8 +28,10 @@ function formatNumber(value: number) {
 
 export default function Log() {
   const trpc = useTRPC();
-  const foodLogSheetRef = useRef<FoodLogSheetRef>(null);
-  const foodCreateSheetRef = useRef<FoodCreateSheetRef>(null);
+  const [activeModal, setActiveModal] = useState<"log" | "create" | null>(null);
+  const [foodLogParams, setFoodLogParams] = useState<FoodLogSheetParams>({});
+  const [foodCreateParams, setFoodCreateParams] =
+    useState<FoodCreateSheetParams>({});
   const timezone = DateTime.local().zoneName;
   const [today] = useState(() => DateTime.now().toJSDate());
   const { data: dailyLogs, isLoading: isLogsLoading } = useQuery(
@@ -37,19 +42,16 @@ export default function Log() {
   );
 
   const handleFoodCreated = (food: FoodListItem) => {
-    setTimeout(() => {
-      foodLogSheetRef.current?.present({
-        initialSearch: food.name,
-        selectedFood: food,
-      });
-    }, 150);
+    setFoodLogParams({
+      initialSearch: food.name,
+      selectedFood: food,
+    });
+    setActiveModal("log");
   };
 
   const handleOpenCreateFood = (initialName?: string) => {
-    foodLogSheetRef.current?.dismiss();
-    setTimeout(() => {
-      foodCreateSheetRef.current?.present({ initialName });
-    }, 150);
+    setFoodCreateParams({ initialName });
+    setActiveModal("create");
   };
 
   const isLoading = isLogsLoading;
@@ -76,10 +78,13 @@ export default function Log() {
 
         <ScrollView
           className="flex-1"
-          contentContainerClassName="px-5 pb-8 pt-6"
+          contentContainerClassName="px-5 pb-2 pt-6"
         >
           <Pressable
-            onPress={() => foodLogSheetRef.current?.present()}
+            onPress={() => {
+              setFoodLogParams({});
+              setActiveModal("log");
+            }}
             className="mb-4 rounded-[28px] bg-text-primary px-5 py-4"
           >
             <Text className="text-center text-base font-semibold text-text-inverse">
@@ -170,10 +175,17 @@ export default function Log() {
       </SafeAreaView>
 
       <FoodLogSheet
-        ref={foodLogSheetRef}
+        visible={activeModal === "log"}
+        params={foodLogParams}
+        onClose={() => setActiveModal(null)}
         onRequestCreateFood={handleOpenCreateFood}
       />
-      <FoodCreateSheet ref={foodCreateSheetRef} onCreated={handleFoodCreated} />
+      <FoodCreateSheet
+        visible={activeModal === "create"}
+        params={foodCreateParams}
+        onClose={() => setActiveModal(null)}
+        onCreated={handleFoodCreated}
+      />
     </>
   );
 }

@@ -1,10 +1,4 @@
-import {
-  forwardRef,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
-} from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Pressable,
@@ -13,24 +7,21 @@ import {
   TextInput,
   View,
 } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
-import { TrueSheet } from "@lodev09/react-native-true-sheet";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
+import { BottomSheetModal } from "@/components/BottomSheetModal";
 
 export type FoodCreateSheetParams = {
   initialName?: string;
 };
 
-export type FoodCreateSheetRef = {
-  present: (params?: FoodCreateSheetParams) => void;
-  dismiss: () => void;
-};
-
 interface FoodCreateSheetProps {
+  visible: boolean;
+  onClose: () => void;
   onCreated: (food: FoodListItem) => void;
+  params?: FoodCreateSheetParams;
 }
 
 function sanitizeWholeNumberInput(value: string) {
@@ -45,14 +36,14 @@ function sanitizeDecimalInput(value: string) {
   return safeDecimal ? `${safeInteger}.${safeDecimal}` : safeInteger;
 }
 
-export const FoodCreateSheet = forwardRef<
-  FoodCreateSheetRef,
-  FoodCreateSheetProps
->(function FoodCreateSheet({ onCreated }, ref) {
+export function FoodCreateSheet({
+  visible,
+  onClose,
+  onCreated,
+  params,
+}: FoodCreateSheetProps) {
   const trpc = useTRPC();
   const queryClient = useQueryClient();
-  const sheetRef = useRef<TrueSheet>(null);
-  const [params, setParams] = useState<FoodCreateSheetParams>({});
   const [name, setName] = useState("");
   const [servingSize, setServingSize] = useState("");
   const [servingUnit, setServingUnit] = useState<"g" | "ml">("g");
@@ -60,30 +51,19 @@ export const FoodCreateSheet = forwardRef<
   const [carbs, setCarbs] = useState("");
   const [fat, setFat] = useState("");
 
-  useImperativeHandle(ref, () => ({
-    present: (nextParams?: FoodCreateSheetParams) => {
-      setParams(nextParams ?? {});
-      sheetRef.current?.present();
-    },
-    dismiss: () => {
-      sheetRef.current?.dismiss();
-    },
-  }));
-
   useEffect(() => {
-    setName(params.initialName?.trim() ?? "");
+    setName(params?.initialName?.trim() ?? "");
     setServingSize("");
     setServingUnit("g");
     setProtein("");
     setCarbs("");
     setFat("");
-  }, [params.initialName]);
+  }, [params?.initialName, visible]);
 
   const createFood = useMutation(
     trpc.createFood.mutationOptions({
       onSuccess: async (food) => {
         await queryClient.invalidateQueries(trpc.listFoods.pathFilter());
-        sheetRef.current?.dismiss();
         onCreated(food);
       },
     }),
@@ -128,167 +108,136 @@ export const FoodCreateSheet = forwardRef<
     });
   };
 
-  const inputStyle = {
-    backgroundColor: mobileTheme.surface.input,
-    borderColor: mobileTheme.border.subtle,
-    borderRadius: 12,
-    borderWidth: 1,
-    color: mobileTheme.text.primary,
-    fontSize: 16,
-    height: 48,
-    paddingHorizontal: 16,
-    paddingVertical: 0,
-  } as const;
-
-  const numericInputStyle = {
-    color: mobileTheme.text.primary,
-    fontSize: 16,
-    paddingVertical: 0,
-    textAlign: "right",
-  } as const;
-
   return (
-    <TrueSheet
-      ref={sheetRef}
-      detents={[0.8, 0.95]}
-      grabber
-      scrollable
-      header={
-        <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
-          <Pressable onPress={() => sheetRef.current?.dismiss()}>
-            <Text className="text-base text-text-secondary">Cancel</Text>
-          </Pressable>
-          <Text className="text-lg font-semibold text-text-primary">
-            New Food
-          </Text>
-          <Pressable onPress={handleSave} disabled={createFood.isPending}>
-            <Text
-              className={`text-base font-semibold ${createFood.isPending ? "text-text-muted" : "text-text-primary"}`}
-            >
-              {createFood.isPending ? "Saving..." : "Save"}
-            </Text>
-          </Pressable>
-        </View>
-      }
+    <BottomSheetModal
+      actionDisabled={createFood.isPending}
+      actionLabel={createFood.isPending ? "Saving..." : "Save"}
+      closeDisabled={createFood.isPending}
+      onAction={handleSave}
+      onClose={onClose}
+      size="foodCreate"
+      title="New Food"
+      visible={visible}
     >
-      <SafeAreaView className="flex-1 bg-surface-sheet" edges={["bottom"]}>
-        <ScrollView
-          className="flex-1 px-4"
-          contentContainerClassName="pb-8"
-          nestedScrollEnabled
-        >
-          <View className="mt-6">
-            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-              Food Name
-            </Text>
-            <TextInput
-              value={name}
-              onChangeText={setName}
-              placeholder="Chicken breast"
-              placeholderTextColor={mobileTheme.text.muted}
-              style={inputStyle}
-            />
-          </View>
+      <ScrollView
+        className="flex-1 px-4"
+        contentContainerClassName="pb-8"
+        keyboardShouldPersistTaps="handled"
+      >
+        <View className="mt-6">
+          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+            Food Name
+          </Text>
+          <TextInput
+            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-base text-text-primary"
+            value={name}
+            onChangeText={setName}
+            placeholder="Chicken breast"
+            placeholderTextColor={mobileTheme.text.muted}
+          />
+        </View>
 
-          <View className="mt-6">
-            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-              Base Serving
-            </Text>
-            <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
-              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                <Text className="text-base text-text-primary">Size</Text>
-                <TextInput
-                  value={servingSize}
-                  onChangeText={(value) =>
-                    setServingSize(sanitizeWholeNumberInput(value))
-                  }
-                  placeholder="100"
-                  placeholderTextColor={mobileTheme.text.muted}
-                  inputMode="numeric"
-                  keyboardType="number-pad"
-                  className="min-w-[96px]"
-                  style={numericInputStyle}
-                />
-              </View>
-              <View className="px-4 py-3">
-                <Text className="mb-3 text-base text-text-primary">Unit</Text>
-                <View className="flex-row gap-3">
-                  {(["g", "ml"] as const).map((unit) => {
-                    const isSelected = servingUnit === unit;
-                    return (
-                      <Pressable
-                        key={unit}
-                        onPress={() => setServingUnit(unit)}
-                        className={`min-w-[72px] rounded-full border px-4 py-2 ${isSelected ? "border-text-primary bg-text-primary" : "border-border-strong bg-surface-raised"}`}
+        <View className="mt-6">
+          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+            Base Serving
+          </Text>
+          <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+              <Text className="text-base text-text-primary">Size</Text>
+              <TextInput
+                value={servingSize}
+                onChangeText={(value) =>
+                  setServingSize(sanitizeWholeNumberInput(value))
+                }
+                placeholder="100"
+                placeholderTextColor={mobileTheme.text.muted}
+                inputMode="numeric"
+                keyboardType="number-pad"
+                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+              />
+            </View>
+            <View className="px-4 py-3">
+              <Text className="mb-3 text-base text-text-primary">Unit</Text>
+              <View className="flex-row gap-3">
+                {(["g", "ml"] as const).map((unit) => {
+                  const isSelected = servingUnit === unit;
+
+                  return (
+                    <Pressable
+                      key={unit}
+                      onPress={() => setServingUnit(unit)}
+                      className={
+                        isSelected
+                          ? "min-w-[72px] rounded-full border border-text-primary bg-text-primary px-4 py-2"
+                          : "min-w-[72px] rounded-full border border-border-strong bg-surface-raised px-4 py-2"
+                      }
+                    >
+                      <Text
+                        className={
+                          isSelected
+                            ? "text-center text-sm font-semibold uppercase text-text-inverse"
+                            : "text-center text-sm font-semibold uppercase text-text-primary"
+                        }
                       >
-                        <Text
-                          className={`text-center text-sm font-semibold uppercase ${isSelected ? "text-text-inverse" : "text-text-primary"}`}
-                        >
-                          {unit}
-                        </Text>
-                      </Pressable>
-                    );
-                  })}
-                </View>
+                        {unit}
+                      </Text>
+                    </Pressable>
+                  );
+                })}
               </View>
             </View>
           </View>
+        </View>
 
-          <View className="mt-6">
-            <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-              Macros Per Serving
-            </Text>
-            <Text className="mb-3 text-sm leading-5 text-text-secondary">
-              These values are stored for the base serving above.
-            </Text>
-            <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
-              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                <Text className="text-base text-text-primary">Protein (g)</Text>
-                <TextInput
-                  value={protein}
-                  onChangeText={(value) =>
-                    setProtein(sanitizeDecimalInput(value))
-                  }
-                  placeholder="0"
-                  placeholderTextColor={mobileTheme.text.muted}
-                  inputMode="decimal"
-                  keyboardType="decimal-pad"
-                  className="min-w-[96px]"
-                  style={numericInputStyle}
-                />
-              </View>
-              <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
-                <Text className="text-base text-text-primary">Carbs (g)</Text>
-                <TextInput
-                  value={carbs}
-                  onChangeText={(value) =>
-                    setCarbs(sanitizeDecimalInput(value))
-                  }
-                  placeholder="0"
-                  placeholderTextColor={mobileTheme.text.muted}
-                  inputMode="decimal"
-                  keyboardType="decimal-pad"
-                  className="min-w-[96px]"
-                  style={numericInputStyle}
-                />
-              </View>
-              <View className="flex-row items-center justify-between px-4 py-3">
-                <Text className="text-base text-text-primary">Fat (g)</Text>
-                <TextInput
-                  value={fat}
-                  onChangeText={(value) => setFat(sanitizeDecimalInput(value))}
-                  placeholder="0"
-                  placeholderTextColor={mobileTheme.text.muted}
-                  inputMode="decimal"
-                  keyboardType="decimal-pad"
-                  className="min-w-[96px]"
-                  style={numericInputStyle}
-                />
-              </View>
+        <View className="mt-6">
+          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
+            Macros Per Serving
+          </Text>
+          <Text className="mb-3 text-sm leading-5 text-text-secondary">
+            These values are stored for the base serving above.
+          </Text>
+          <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+              <Text className="text-base text-text-primary">Protein (g)</Text>
+              <TextInput
+                value={protein}
+                onChangeText={(value) =>
+                  setProtein(sanitizeDecimalInput(value))
+                }
+                placeholder="0"
+                placeholderTextColor={mobileTheme.text.muted}
+                inputMode="decimal"
+                keyboardType="decimal-pad"
+                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+              />
+            </View>
+            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+              <Text className="text-base text-text-primary">Carbs (g)</Text>
+              <TextInput
+                value={carbs}
+                onChangeText={(value) => setCarbs(sanitizeDecimalInput(value))}
+                placeholder="0"
+                placeholderTextColor={mobileTheme.text.muted}
+                inputMode="decimal"
+                keyboardType="decimal-pad"
+                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+              />
+            </View>
+            <View className="flex-row items-center justify-between px-4 py-3">
+              <Text className="text-base text-text-primary">Fat (g)</Text>
+              <TextInput
+                value={fat}
+                onChangeText={(value) => setFat(sanitizeDecimalInput(value))}
+                placeholder="0"
+                placeholderTextColor={mobileTheme.text.muted}
+                inputMode="decimal"
+                keyboardType="decimal-pad"
+                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+              />
             </View>
           </View>
-        </ScrollView>
-      </SafeAreaView>
-    </TrueSheet>
+        </View>
+      </ScrollView>
+    </BottomSheetModal>
   );
-});
+}

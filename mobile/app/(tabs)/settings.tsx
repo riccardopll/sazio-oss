@@ -19,7 +19,7 @@ export default function Settings() {
           Manage profile and session preferences.
         </Text>
       </View>
-      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8">
+      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-2">
         <DashboardCard className="mt-6">
           <Text className="text-lg font-semibold text-text-primary">
             Profile
