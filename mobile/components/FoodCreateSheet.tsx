@@ -72,9 +72,9 @@ export function FoodCreateSheet({
   const handleSave = () => {
     const trimmedName = name.trim();
     const parsedServingSize = parseInt(servingSize, 10);
-    const parsedProtein = parseFloat(protein);
-    const parsedCarbs = parseFloat(carbs);
-    const parsedFat = parseFloat(fat);
+    const parsedProtein = protein === "" ? 0 : parseFloat(protein);
+    const parsedCarbs = carbs === "" ? 0 : parseFloat(carbs);
+    const parsedFat = fat === "" ? 0 : parseFloat(fat);
 
     if (!trimmedName) {
       Alert.alert("Missing name", "Enter a food name before saving.");
@@ -129,7 +129,7 @@ export function FoodCreateSheet({
             Food Name
           </Text>
           <TextInput
-            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-base text-text-primary"
+            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-[16px] text-text-primary"
             value={name}
             onChangeText={setName}
             placeholder="Chicken breast"
@@ -153,7 +153,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="numeric"
                 keyboardType="number-pad"
-                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
               />
             </View>
             <View className="px-4 py-3">
@@ -208,7 +208,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
               />
             </View>
             <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
@@ -220,7 +220,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
               />
             </View>
             <View className="flex-row items-center justify-between px-4 py-3">
@@ -232,7 +232,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
               />
             </View>
           </View>

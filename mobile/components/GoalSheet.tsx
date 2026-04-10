@@ -183,7 +183,7 @@ export function GoalSheet({ visible, onClose, params }: GoalSheetProps) {
             Goal Name
           </Text>
           <TextInput
-            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-base text-text-primary"
+            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-[16px] text-text-primary"
             value={name}
             onChangeText={setName}
             placeholder="Goal name (optional)"
@@ -246,7 +246,7 @@ export function GoalSheet({ visible, onClose, params }: GoalSheetProps) {
                 placeholder="0"
                 inputMode="numeric"
                 keyboardType="number-pad"
-                className="min-w-[80px] py-0 text-right text-base text-text-primary"
+                className="min-w-[80px] py-0 text-right text-[16px] text-text-primary"
                 placeholderTextColor={mobileTheme.text.muted}
               />
             </View>
@@ -260,7 +260,7 @@ export function GoalSheet({ visible, onClose, params }: GoalSheetProps) {
                 placeholder="0"
                 inputMode="numeric"
                 keyboardType="number-pad"
-                className="min-w-[80px] py-0 text-right text-base text-text-primary"
+                className="min-w-[80px] py-0 text-right text-[16px] text-text-primary"
                 placeholderTextColor={mobileTheme.text.muted}
               />
             </View>
@@ -274,7 +274,7 @@ export function GoalSheet({ visible, onClose, params }: GoalSheetProps) {
                 placeholder="0"
                 inputMode="numeric"
                 keyboardType="number-pad"
-                className="min-w-[80px] py-0 text-right text-base text-text-primary"
+                className="min-w-[80px] py-0 text-right text-[16px] text-text-primary"
                 placeholderTextColor={mobileTheme.text.muted}
               />
             </View>

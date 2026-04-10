@@ -1,19 +1,53 @@
-import { useSSO } from "@clerk/expo";
+import { useAuth, useSSO } from "@clerk/expo";
+import { Redirect } from "expo-router";
+import { useState } from "react";
 import { View, Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GoogleSignInButton from "@/assets/images/ios_dark_sq_ctn.svg";
 import { DashboardCard } from "@/components/DashboardCard";
 
 export default function SignIn() {
+  const { isLoaded, isSignedIn } = useAuth();
   const { startSSOFlow } = useSSO();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const onGoogleSignIn = async () => {
-    const { createdSessionId, setActive } = await startSSOFlow({
-      strategy: "oauth_google",
-    });
-    if (createdSessionId) {
-      await setActive!({ session: createdSessionId });
+    if (!isLoaded || isSignedIn || isSubmitting) {
+      return;
     }
+
+    setIsSubmitting(true);
+
+    try {
+      const { createdSessionId, setActive } = await startSSOFlow({
+        strategy: "oauth_google",
+      });
+
+      if (createdSessionId) {
+        await setActive!({ session: createdSessionId });
+      }
+    } catch (error) {
+      const message = error instanceof Error ? error.message : String(error);
+      setIsSubmitting(false);
+
+      if (!message.includes("already signed in")) {
+        throw error;
+      }
+
+      return;
+    }
+
+    setIsSubmitting(false);
   };
+
+  if (!isLoaded) {
+    return null;
+  }
+
+  if (isSignedIn) {
+    return <Redirect href="/(tabs)" />;
+  }
+
   return (
     <SafeAreaView className="flex-1 bg-surface-app">
       <View className="flex-1 justify-center p-5">
@@ -37,6 +71,7 @@ export default function SignIn() {
           </Text>
           <Pressable
             onPress={onGoogleSignIn}
+            disabled={isSubmitting}
             className="mt-5 self-start active:opacity-80"
           >
             <GoogleSignInButton width={199} height={44} />

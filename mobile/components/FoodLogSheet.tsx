@@ -144,7 +144,7 @@ export function FoodLogSheet({
             Search
           </Text>
           <TextInput
-            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-base text-text-primary"
+            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-[16px] text-text-primary"
             value={search}
             onChangeText={setSearch}
             placeholder="Search your foods"
@@ -183,7 +183,7 @@ export function FoodLogSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-base text-text-primary"
+                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
               />
             </View>
             <View className="px-4 py-4">
