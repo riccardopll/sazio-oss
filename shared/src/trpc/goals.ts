@@ -127,6 +127,71 @@ export const goalProcedures = {
       return withCalorieGoal(result);
     }),
 
+  setTodayGoal: protectedProcedure
+    .input(
+      z.object({
+        timezone: z.string(),
+        proteinGoal: z.number().int().nonnegative(),
+        carbsGoal: z.number().int().nonnegative(),
+        fatGoal: z.number().int().nonnegative(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, userId } = ctx;
+      const today = DateTime.now().setZone(input.timezone).startOf("day");
+      const todayStart = today.toMillis();
+
+      const currentGoal = await db.query.goals.findFirst({
+        where: and(
+          eq(goals.userId, userId),
+          lte(goals.startAt, todayStart),
+          or(isNull(goals.endAt), gt(goals.endAt, todayStart)),
+        ),
+        orderBy: desc(goals.startAt),
+      });
+
+      if (currentGoal) {
+        if (currentGoal.startAt === todayStart) {
+          await db
+            .delete(goals)
+            .where(and(eq(goals.id, currentGoal.id), eq(goals.userId, userId)));
+        } else {
+          await db
+            .update(goals)
+            .set({ endAt: todayStart })
+            .where(and(eq(goals.id, currentGoal.id), eq(goals.userId, userId)));
+        }
+      }
+
+      const overlapping = await db.query.goals.findFirst({
+        where: and(
+          eq(goals.userId, userId),
+          or(isNull(goals.endAt), gt(goals.endAt, todayStart)),
+        ),
+      });
+
+      if (overlapping) {
+        throw new TRPCError({
+          code: "CONFLICT",
+          message: "Goal period overlaps with an existing goal",
+        });
+      }
+
+      const [result] = await db
+        .insert(goals)
+        .values({
+          userId,
+          name: `Goal ${today.toFormat("MMM d, yyyy")}`,
+          startAt: todayStart,
+          proteinGoal: input.proteinGoal,
+          carbsGoal: input.carbsGoal,
+          fatGoal: input.fatGoal,
+        })
+        .returning();
+
+      return withCalorieGoal(result);
+    }),
+
   updateGoal: protectedProcedure
     .input(
       z.object({
