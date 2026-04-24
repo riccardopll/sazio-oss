@@ -14,8 +14,8 @@ export const screenStyles = {
 
 export const textStyles = {
   eyebrow: "text-xs uppercase tracking-[1.6px] text-text-muted",
-  screenTitle: "text-3xl font-bold text-text-primary",
-  screenTitleWithEyebrow: "mt-2 text-3xl font-bold text-text-primary",
+  screenTitle: "text-4xl font-bold text-text-primary",
+  screenTitleWithEyebrow: "mt-2 text-4xl font-bold text-text-primary",
   sectionTitle:
     "text-sm font-medium uppercase tracking-[1.1px] text-text-muted",
   cardTitle: "text-lg font-semibold text-text-primary",
@@ -28,4 +28,9 @@ export const cardStyles = {
   base: "overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40",
   content: "p-5",
   row: "flex-row items-center gap-4 px-4 py-4",
+} as const;
+
+export const controlStyles = {
+  hitTarget: "min-h-11 min-w-11 items-center justify-center",
+  textAction: "min-h-11 justify-center",
 } as const;

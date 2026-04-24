@@ -22,7 +22,7 @@ interface NutritionProgressCardProps {
 type MacroVariant = "calories" | "carbs" | "fat" | "protein";
 type MacroIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
-const METRIC_STYLES: Record<
+const METRIC_CONFIG: Record<
   MacroVariant,
   { color: string; icon: MacroIconName; unit: string }
 > = {
@@ -162,12 +162,12 @@ function MacroCard({
   metric: NutritionData;
   variant: Exclude<MacroVariant, "calories">;
 }) {
-  const style = METRIC_STYLES[variant];
+  const metricConfig = METRIC_CONFIG[variant];
   const summary = getMetricSummary(metric);
   const detail =
     summary.status === "goal not set"
       ? summary.detail
-      : `${formatValue(metric.consumed)}${style.unit} / ${formatValue(metric.goal)}${style.unit}`;
+      : `${formatValue(metric.consumed)}${metricConfig.unit} / ${formatValue(metric.goal)}${metricConfig.unit}`;
 
   return (
     <Card
@@ -179,7 +179,7 @@ function MacroCard({
           className="text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
           numberOfLines={1}
         >
-          {`${formatValue(summary.delta)}${style.unit}`}
+          {`${formatValue(summary.delta)}${metricConfig.unit}`}
         </Text>
         <Text
           className="mt-0.5 text-center text-sm font-medium leading-5 text-text-secondary"
@@ -193,7 +193,7 @@ function MacroCard({
 
       <View className="items-center justify-center py-2">
         <ProgressRing
-          color={style.color}
+          color={metricConfig.color}
           iconSize={20}
           progress={summary.progress}
           size={66}
@@ -226,7 +226,7 @@ export function NutritionProgressCard({
   }
 
   const calorieSummary = getMetricSummary(calories);
-  const calorieStyle = METRIC_STYLES.calories;
+  const calorieConfig = METRIC_CONFIG.calories;
 
   return (
     <View className="gap-3">
@@ -250,8 +250,8 @@ export function NutritionProgressCard({
           </View>
 
           <ProgressRing
-            color={calorieStyle.color}
-            icon={calorieStyle.icon}
+            color={calorieConfig.color}
+            icon={calorieConfig.icon}
             iconSize={40}
             progress={calorieSummary.progress}
             size={148}

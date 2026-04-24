@@ -85,14 +85,16 @@ export default function Dashboard() {
   const bottomContentPadding = getBottomTabBarContentPadding(insets.bottom);
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <ScreenHeader
-        eyebrow={selectedDate.toLocaleString({
-          weekday: "long",
-          month: "long",
-          day: "numeric",
-        })}
-        title={`Hi, ${user?.firstName ?? "Anon"}`}
-      />
+      <View className="mb-2">
+        <ScreenHeader
+          eyebrow={selectedDate.toLocaleString({
+            weekday: "long",
+            month: "long",
+            day: "numeric",
+          })}
+          title={`Hi, ${user?.firstName ?? "Anon"}`}
+        />
+      </View>
       <WeekSelector
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}

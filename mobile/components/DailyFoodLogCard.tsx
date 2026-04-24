@@ -9,11 +9,9 @@ import {
 } from "react-native";
 import { DateTime } from "luxon";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
+import { controlStyles, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
-import { textStyles } from "@/lib/styles";
 import { Card } from "./Card";
-
-const LOG_CHEVRON_SIZE = 16;
 
 interface DailyFoodLogEntry {
   id: number;
@@ -125,7 +123,7 @@ function FoodLogRow({
           <Ionicons
             color={mobileTheme.text.muted}
             name="chevron-forward"
-            size={LOG_CHEVRON_SIZE}
+            size={16}
           />
         </View>
       </View>
@@ -161,7 +159,7 @@ export function DailyFoodLogCard({
             <Pressable
               accessibilityLabel="See all logged food"
               accessibilityRole="button"
-              className="flex-row items-center gap-1 py-1 pl-2"
+              className={`${controlStyles.hitTarget} flex-row gap-1 pl-3`}
               onPress={() => setIsLogSheetVisible(true)}
             >
               <Text className="text-sm font-medium text-text-secondary">
@@ -170,7 +168,7 @@ export function DailyFoodLogCard({
               <Ionicons
                 color={mobileTheme.text.secondary}
                 name="chevron-forward"
-                size={LOG_CHEVRON_SIZE}
+                size={16}
               />
             </Pressable>
           ) : null}

@@ -12,6 +12,7 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
+import { controlStyles } from "@/lib/styles";
 
 export type FoodCreateSheetParams = {
   initialName?: string;
@@ -168,8 +169,8 @@ export function FoodCreateSheet({
                       onPress={() => setServingUnit(unit)}
                       className={
                         isSelected
-                          ? "min-w-[72px] rounded-full border border-text-primary bg-text-primary px-4 py-2"
-                          : "min-w-[72px] rounded-full border border-border-strong bg-surface-raised px-4 py-2"
+                          ? `min-w-[72px] rounded-full border border-text-primary bg-text-primary px-4 py-2 ${controlStyles.textAction}`
+                          : `min-w-[72px] rounded-full border border-border-strong bg-surface-raised px-4 py-2 ${controlStyles.textAction}`
                       }
                     >
                       <Text

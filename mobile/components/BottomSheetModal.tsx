@@ -8,6 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import { controlStyles } from "@/lib/styles";
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -67,14 +68,22 @@ export function BottomSheetModal({
               <View className="h-1.5 w-12 rounded-full bg-border-subtle" />
             </View>
             <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
-              <Pressable disabled={closeDisabled} onPress={onClose}>
+              <Pressable
+                className={`${controlStyles.textAction} min-w-16 items-start`}
+                disabled={closeDisabled}
+                onPress={onClose}
+              >
                 <Text className="text-base text-text-secondary">Cancel</Text>
               </Pressable>
               <Text className="text-lg font-semibold text-text-primary">
                 {title}
               </Text>
               {onAction ? (
-                <Pressable disabled={actionDisabled} onPress={onAction}>
+                <Pressable
+                  className={`${controlStyles.textAction} min-w-16 items-end`}
+                  disabled={actionDisabled}
+                  onPress={onAction}
+                >
                   <Text
                     className={`text-base font-semibold ${actionDisabled ? "text-text-muted" : "text-text-primary"}`}
                   >
@@ -82,7 +91,7 @@ export function BottomSheetModal({
                   </Text>
                 </Pressable>
               ) : (
-                <View className="w-14" />
+                <View className="w-16" />
               )}
             </View>
             <SafeAreaView

@@ -13,6 +13,7 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
+import { controlStyles } from "@/lib/styles";
 
 export type FoodLogSheetParams = {
   initialSearch?: string;
@@ -152,7 +153,7 @@ export function FoodLogSheet({
           />
           <Pressable
             onPress={handleCreateFood}
-            className="mt-3 rounded-full border border-border-strong bg-surface-raised px-4 py-3"
+            className={`mt-3 rounded-full border border-border-strong bg-surface-raised px-4 py-3 ${controlStyles.textAction}`}
           >
             <Text className="text-center text-sm font-semibold text-text-primary">
               {search.trim()

@@ -17,7 +17,7 @@ import { Card } from "@/components/Card";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
-import { screenStyles, textStyles } from "@/lib/styles";
+import { controlStyles, screenStyles, textStyles } from "@/lib/styles";
 
 const MAX_MACRO = 300;
 
@@ -190,7 +190,7 @@ export default function GoalScreen() {
           eyebrow="My Goal"
           leftAccessory={
             <Pressable
-              className="rounded-full p-1 active:opacity-80"
+              className={`${controlStyles.hitTarget} rounded-full active:opacity-80`}
               onPress={() => router.back()}
             >
               <Ionicons
@@ -298,7 +298,7 @@ export default function GoalScreen() {
         </Pressable>
         {currentGoal ? (
           <Pressable
-            className="mt-5"
+            className={`mt-4 ${controlStyles.textAction}`}
             disabled={setTodayGoal.isPending || deleteGoal.isPending}
             onPress={handleDelete}
           >
