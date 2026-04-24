@@ -5,7 +5,11 @@ Nutrition/macro tracking app. pnpm monorepo: Expo mobile app, Hono/Cloudflare Wo
 ## Workflow
 
 - After modifying any TypeScript file, run `pnpm typecheck` and `pnpm lint`.
-- When writing or refactoring Expo code, explore the Expo examples repository for current patterns and implementation guidance: https://github.com/expo/examples
+
+## Mobile UI Styling
+
+- `mobile/lib/theme.ts` exposes the app's color theme from `mobile/theme.json` and the React Navigation theme. Use it when code needs concrete color values, such as icon colors, chart/ring colors, or navigation configuration.
+- `mobile/lib/styles.ts` defines shared NativeWind class tokens for repeated layout, typography, and surface styles. Use it to keep screen gutters, headers, text hierarchy, card chrome, and row spacing consistent across screens.
 
 ## Domain Knowledge
 

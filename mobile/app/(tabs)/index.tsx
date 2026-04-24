@@ -1,5 +1,5 @@
 import { useUser } from "@clerk/expo";
-import { Text, View, ScrollView, ActivityIndicator } from "react-native";
+import { View, ScrollView, ActivityIndicator } from "react-native";
 import {
   SafeAreaView,
   useSafeAreaInsets,
@@ -10,11 +10,13 @@ import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
 import { DailyFoodLogCard } from "@/components/DailyFoodLogCard";
 import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
+import { ScreenHeader } from "@/components/ScreenHeader";
 import { useState, useMemo } from "react";
 import { DateTime } from "luxon";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { screenStyles } from "@/lib/styles";
 
-function getWeekStart(date: DateTime): DateTime {
+function getWeekStart(date: DateTime) {
   return date.startOf("week");
 }
 
@@ -83,28 +85,24 @@ export default function Dashboard() {
   const bottomContentPadding = getBottomTabBarContentPadding(insets.bottom);
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <View className="px-5 pb-2 pt-1">
-        <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
-          {selectedDate.toLocaleString({
-            weekday: "long",
-            month: "long",
-            day: "numeric",
-          })}
-        </Text>
-        <Text className="mt-2 text-3xl font-bold text-text-primary">
-          {`Hi, ${user?.firstName ?? "Anon"}`}
-        </Text>
-      </View>
+      <ScreenHeader
+        eyebrow={selectedDate.toLocaleString({
+          weekday: "long",
+          month: "long",
+          day: "numeric",
+        })}
+        title={`Hi, ${user?.firstName ?? "Anon"}`}
+      />
       <WeekSelector
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}
       />
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-3"
+        contentContainerClassName={screenStyles.content}
         contentContainerStyle={{ paddingBottom: bottomContentPadding }}
       >
-        <View className="gap-3">
+        <View className={screenStyles.cardGap}>
           <NutritionProgressCard
             calories={{
               consumed: selectedDayData?.calories ?? 0,

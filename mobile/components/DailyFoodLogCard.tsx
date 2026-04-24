@@ -10,6 +10,8 @@ import {
 import { DateTime } from "luxon";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
 import { mobileTheme } from "@/lib/theme";
+import { textStyles } from "@/lib/styles";
+import { Card } from "./Card";
 
 const LOG_CHEVRON_SIZE = 16;
 
@@ -145,12 +147,10 @@ export function DailyFoodLogCard({
 
   return (
     <>
-      <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card px-4 py-3 shadow-lg shadow-black/40">
+      <Card contentClassName="px-4 py-4">
         <View className="flex-row items-center justify-between gap-4">
           <View className="flex-1">
-            <Text className="text-lg font-semibold text-text-primary">
-              {title}
-            </Text>
+            <Text className={textStyles.cardTitle}>{title}</Text>
             {!isLoading && displayLogs.length === 0 ? (
               <Text className="mt-3 text-base font-semibold text-text-primary">
                 Nothing logged yet
@@ -192,7 +192,7 @@ export function DailyFoodLogCard({
             ))}
           </View>
         )}
-      </View>
+      </Card>
 
       <BottomSheetModal
         onClose={() => setIsLogSheetVisible(false)}

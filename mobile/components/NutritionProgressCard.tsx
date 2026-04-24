@@ -3,7 +3,8 @@ import type { ComponentProps } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { mobileTheme } from "@/lib/theme";
-import { DashboardCard } from "./DashboardCard";
+import { textStyles } from "@/lib/styles";
+import { Card } from "./Card";
 
 interface NutritionData {
   consumed: number;
@@ -169,40 +170,41 @@ function MacroCard({
       : `${formatValue(metric.consumed)}${style.unit} / ${formatValue(metric.goal)}${style.unit}`;
 
   return (
-    <View className="flex-1 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
-      <View className="min-h-[160px] items-center justify-between px-2.5 py-3">
-        <View className="items-center">
-          <Text
-            className="text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
-            numberOfLines={1}
-          >
-            {`${formatValue(summary.delta)}${style.unit}`}
-          </Text>
-          <Text
-            className="mt-0.5 text-center text-sm font-medium leading-5 text-text-secondary"
-            numberOfLines={2}
-          >
-            {summary.status === "goal not set"
-              ? label
-              : `${label} ${summary.status}`}
-          </Text>
-        </View>
-
-        <View className="items-center justify-center py-2">
-          <ProgressRing
-            color={style.color}
-            iconSize={20}
-            progress={summary.progress}
-            size={66}
-            strokeWidth={8}
-          />
-        </View>
-
-        <Text className="self-center text-center text-[11px] text-text-muted">
-          {detail}
+    <Card
+      className="flex-1"
+      contentClassName="min-h-[160px] items-center justify-between px-2.5 py-3"
+    >
+      <View className="items-center">
+        <Text
+          className="text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
+          numberOfLines={1}
+        >
+          {`${formatValue(summary.delta)}${style.unit}`}
+        </Text>
+        <Text
+          className="mt-0.5 text-center text-sm font-medium leading-5 text-text-secondary"
+          numberOfLines={2}
+        >
+          {summary.status === "goal not set"
+            ? label
+            : `${label} ${summary.status}`}
         </Text>
       </View>
-    </View>
+
+      <View className="items-center justify-center py-2">
+        <ProgressRing
+          color={style.color}
+          iconSize={20}
+          progress={summary.progress}
+          size={66}
+          strokeWidth={8}
+        />
+      </View>
+
+      <Text className="self-center text-center text-[11px] text-text-muted">
+        {detail}
+      </Text>
+    </Card>
   );
 }
 
@@ -215,11 +217,11 @@ export function NutritionProgressCard({
 }: NutritionProgressCardProps) {
   if (isLoading) {
     return (
-      <DashboardCard>
+      <Card>
         <View className="items-center justify-center py-8">
           <ActivityIndicator size="large" color={mobileTheme.state.loading} />
         </View>
-      </DashboardCard>
+      </Card>
     );
   }
 
@@ -228,12 +230,10 @@ export function NutritionProgressCard({
 
   return (
     <View className="gap-3">
-      <DashboardCard contentClassName="px-4 py-4">
+      <Card contentClassName="px-4 py-4">
         <View className="flex-row items-center justify-between gap-3">
           <View className="flex-1">
-            <Text className="text-base font-medium leading-5 text-text-secondary">
-              Daily nutrition
-            </Text>
+            <Text className={textStyles.cardSubtitle}>Daily nutrition</Text>
             <Text className="mt-3 text-[54px] font-bold leading-[54px] tracking-tight text-text-primary">
               {formatValue(calorieSummary.delta)}
             </Text>
@@ -258,7 +258,7 @@ export function NutritionProgressCard({
             strokeWidth={13}
           />
         </View>
-      </DashboardCard>
+      </Card>
 
       <View className="flex-row gap-3">
         <MacroCard label="Protein" metric={protein} variant="protein" />

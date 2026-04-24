@@ -4,7 +4,7 @@ import { useState } from "react";
 import { View, Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GoogleSignInButton from "@/assets/images/ios_dark_sq_ctn.svg";
-import { DashboardCard } from "@/components/DashboardCard";
+import { Card } from "@/components/Card";
 
 export default function SignIn() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -61,7 +61,7 @@ export default function SignIn() {
           Sign in to access your dashboard, goals, and future meal logging in a
           darker, denser mobile shell.
         </Text>
-        <DashboardCard className="mt-8">
+        <Card className="mt-8">
           <Text className="text-lg font-semibold text-text-primary">
             Continue with Google
           </Text>
@@ -76,7 +76,7 @@ export default function SignIn() {
           >
             <GoogleSignInButton width={199} height={44} />
           </Pressable>
-        </DashboardCard>
+        </Card>
       </View>
     </SafeAreaView>
   );

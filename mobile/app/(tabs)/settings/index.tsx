@@ -9,6 +9,9 @@ import {
   useSafeAreaInsets,
 } from "react-native-safe-area-context";
 import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
+import { Card } from "@/components/Card";
+import { ScreenHeader } from "@/components/ScreenHeader";
+import { cardStyles, screenStyles, textStyles } from "@/lib/styles";
 import { useTRPC } from "@/lib/trpc";
 
 export default function Settings() {
@@ -38,48 +41,39 @@ export default function Settings() {
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName="px-5 pt-4"
+        contentContainerClassName={screenStyles.scrollContent}
         contentContainerStyle={{
           paddingBottom: getBottomTabBarContentPadding(insets.bottom),
         }}
       >
-        <View>
-          <Text className="text-3xl font-bold text-text-primary">Profile</Text>
-        </View>
+        <ScreenHeader embedded title="Profile" />
 
-        <View className="mt-6 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
-          <View className="flex-row items-center gap-4 px-4 py-4">
+        <Card className="mt-6" contentClassName="p-0">
+          <View className={cardStyles.row}>
             <View className="h-14 w-14 items-center justify-center rounded-full bg-surface-raised">
               <Ionicons color="#F5F5F7" name="person-outline" size={24} />
             </View>
             <View className="flex-1">
-              <Text
-                className="text-lg font-semibold text-text-primary"
-                numberOfLines={1}
-              >
+              <Text className={textStyles.cardTitle} numberOfLines={1}>
                 {user?.primaryEmailAddress?.emailAddress ?? "No email"}
               </Text>
             </View>
           </View>
-        </View>
+        </Card>
 
         <View className="mt-8">
-          <Text className="text-xl font-medium text-text-muted">
-            Goals & Tracking
-          </Text>
+          <Text className={textStyles.sectionTitle}>Goals & Tracking</Text>
         </View>
-        <View className="mt-4 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
+        <Card className="mt-4" contentClassName="p-0">
           <Pressable
-            className="flex-row items-center gap-4 px-4 py-4 active:opacity-80"
+            className={`${cardStyles.row} active:opacity-80`}
             onPress={() => router.push("/settings/goal")}
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">
               <Ionicons color="#F5F5F7" name="flag-outline" size={20} />
             </View>
             <View className="flex-1">
-              <Text className="text-lg font-semibold text-text-primary">
-                My Goal
-              </Text>
+              <Text className={textStyles.cardTitle}>My Goal</Text>
             </View>
             <View className="flex-row items-center gap-2">
               {!currentGoal ? (
@@ -88,14 +82,14 @@ export default function Settings() {
               <Ionicons color="#8B8B92" name="chevron-forward" size={20} />
             </View>
           </Pressable>
-        </View>
+        </Card>
 
         <View className="mt-8">
-          <Text className="text-xl font-medium text-text-muted">Account</Text>
+          <Text className={textStyles.sectionTitle}>Account</Text>
         </View>
-        <View className="mt-4 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
+        <Card className="mt-4" contentClassName="p-0">
           <Pressable
-            className="flex-row items-center gap-4 px-4 py-4 active:opacity-80"
+            className={`${cardStyles.row} active:opacity-80`}
             onPress={handleSignOut}
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">
@@ -105,7 +99,7 @@ export default function Settings() {
               Sign Out
             </Text>
           </Pressable>
-        </View>
+        </Card>
       </ScrollView>
     </SafeAreaView>
   );

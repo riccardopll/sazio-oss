@@ -8,6 +8,7 @@ import {
   type NativeScrollEvent,
 } from "react-native";
 import { DateTime } from "luxon";
+import { screenStyles } from "@/lib/styles";
 
 interface WeekSelectorProps {
   selectedDate: DateTime;
@@ -95,7 +96,10 @@ export function WeekSelector({
           item.weekStart.toISODate() ?? item.weekStart.toMillis().toString()
         }
         renderItem={({ item }) => (
-          <View className="flex-row px-3" style={{ width }}>
+          <View
+            className={`flex-row ${screenStyles.content}`}
+            style={{ width }}
+          >
             {item.days.map((day, index) => (
               <Pressable
                 key={day.toISODate()}

@@ -13,9 +13,11 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { DashboardCard } from "@/components/DashboardCard";
+import { Card } from "@/components/Card";
+import { ScreenHeader } from "@/components/ScreenHeader";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
+import { screenStyles, textStyles } from "@/lib/styles";
 
 const MAX_MACRO = 300;
 
@@ -179,32 +181,32 @@ export default function GoalScreen() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8">
-        <View className="flex-row items-center gap-3 pb-2 pt-4">
-          <Pressable
-            className="rounded-full p-1 active:opacity-80"
-            onPress={() => router.back()}
-          >
-            <Ionicons
-              color={mobileTheme.text.primary}
-              name="arrow-back"
-              size={22}
-            />
-          </Pressable>
-          <View>
-            <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
-              My Goal
-            </Text>
-            <Text className="mt-1 text-3xl font-bold text-text-primary">
-              {currentGoal ? "Replace Goal" : "Create Goal"}
-            </Text>
-          </View>
-        </View>
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName={`${screenStyles.content} pb-8`}
+      >
+        <ScreenHeader
+          embedded
+          eyebrow="My Goal"
+          leftAccessory={
+            <Pressable
+              className="rounded-full p-1 active:opacity-80"
+              onPress={() => router.back()}
+            >
+              <Ionicons
+                color={mobileTheme.text.primary}
+                name="arrow-back"
+                size={22}
+              />
+            </Pressable>
+          }
+          title={currentGoal ? "Replace Goal" : "Create Goal"}
+        />
 
-        <DashboardCard className="mt-6">
+        <Card className="mt-6">
           {currentGoal ? (
             <View>
-              <Text className="text-3xl font-bold text-text-primary">
+              <Text className={textStyles.screenTitle}>
                 {`Started ${DateTime.fromMillis(currentGoal.startAt).toFormat("MMM d")}`}
               </Text>
               <View className="mt-4 flex-row items-center gap-5">
@@ -243,16 +245,12 @@ export default function GoalScreen() {
               </View>
             </View>
           ) : (
-            <Text className="text-3xl font-bold text-text-primary">
-              No Active Goal
-            </Text>
+            <Text className={textStyles.screenTitle}>No Active Goal</Text>
           )}
-        </DashboardCard>
+        </Card>
 
-        <DashboardCard className="mt-6">
-          <Text className="text-sm uppercase tracking-[1.6px] text-text-muted">
-            Calories
-          </Text>
+        <Card className="mt-6">
+          <Text className={textStyles.sectionTitle}>Calories</Text>
           <Text className="mt-2 text-4xl font-bold text-nutrition-calories">
             {calories}
           </Text>
@@ -275,7 +273,7 @@ export default function GoalScreen() {
             value={fat}
             onValueChange={setFat}
           />
-        </DashboardCard>
+        </Card>
 
         <Pressable
           className={`mt-6 rounded-[24px] px-5 py-4 ${
