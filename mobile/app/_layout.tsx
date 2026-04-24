@@ -28,14 +28,6 @@ export default function RootLayout() {
           >
             <Stack.Screen name="(tabs)" />
             <Stack.Screen name="(auth)" />
-            <Stack.Screen
-              name="log-food"
-              options={{
-                animation: "fade",
-                contentStyle: { backgroundColor: "transparent" },
-                presentation: "transparentModal",
-              }}
-            />
           </Stack>
         </ThemeProvider>
       </TRPCProvider>

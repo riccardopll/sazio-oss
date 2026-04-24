@@ -1,6 +1,5 @@
 import type { FoodListItem } from "@sazio-oss/shared";
-import { router } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   FoodCreateSheet,
   type FoodCreateSheetParams,
@@ -10,11 +9,22 @@ import {
   type FoodLogSheetParams,
 } from "@/components/FoodLogSheet";
 
-export default function LogFoodRoute() {
+interface LogFoodSheetsProps {
+  visible: boolean;
+  onClose: () => void;
+}
+
+export function LogFoodSheets({ visible, onClose }: LogFoodSheetsProps) {
   const [activeModal, setActiveModal] = useState<"log" | "create">("log");
   const [foodLogParams, setFoodLogParams] = useState<FoodLogSheetParams>({});
   const [foodCreateParams, setFoodCreateParams] =
     useState<FoodCreateSheetParams>({});
+
+  useEffect(() => {
+    setActiveModal("log");
+    setFoodLogParams({});
+    setFoodCreateParams({});
+  }, [visible]);
 
   const handleFoodCreated = (food: FoodListItem) => {
     setFoodLogParams({
@@ -32,15 +42,15 @@ export default function LogFoodRoute() {
   return (
     <>
       <FoodLogSheet
-        visible={activeModal === "log"}
+        visible={visible && activeModal === "log"}
         params={foodLogParams}
-        onClose={() => router.back()}
+        onClose={onClose}
         onRequestCreateFood={handleOpenCreateFood}
       />
       <FoodCreateSheet
-        visible={activeModal === "create"}
+        visible={visible && activeModal === "create"}
         params={foodCreateParams}
-        onClose={() => router.back()}
+        onClose={onClose}
         onCreated={handleFoodCreated}
       />
     </>
