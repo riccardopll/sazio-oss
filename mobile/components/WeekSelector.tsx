@@ -95,7 +95,7 @@ export function WeekSelector({
           item.weekStart.toISODate() ?? item.weekStart.toMillis().toString()
         }
         renderItem={({ item }) => (
-          <View className="flex-row px-5" style={{ width }}>
+          <View className="flex-row px-3" style={{ width }}>
             {item.days.map((day, index) => (
               <Pressable
                 key={day.toISODate()}

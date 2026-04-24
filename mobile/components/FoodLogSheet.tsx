@@ -163,7 +163,7 @@ export function FoodLogSheet({
         </View>
 
         {selectedFood && previewMacros ? (
-          <View className="mt-6 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+          <View className="mt-6 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
             <View className="border-b border-border-subtle px-4 py-4">
               <Text className="text-lg font-semibold text-text-primary">
                 {selectedFood.name}
@@ -230,7 +230,7 @@ export function FoodLogSheet({
           <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
             Foods
           </Text>
-          <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
             {foodsQuery.isLoading ? (
               <View className="items-center justify-center px-4 py-8">
                 <ActivityIndicator

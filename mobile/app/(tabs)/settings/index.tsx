@@ -4,11 +4,16 @@ import { useQuery } from "@tanstack/react-query";
 import { useRouter } from "expo-router";
 import { DateTime } from "luxon";
 import { Alert, Pressable, ScrollView, Text, View } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
+import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
 import { useTRPC } from "@/lib/trpc";
 
 export default function Settings() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const trpc = useTRPC();
   const { signOut } = useClerk();
   const { user } = useUser();
@@ -31,12 +36,18 @@ export default function Settings() {
 
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-8 pt-4">
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-5 pt-4"
+        contentContainerStyle={{
+          paddingBottom: getBottomTabBarContentPadding(insets.bottom),
+        }}
+      >
         <View>
           <Text className="text-3xl font-bold text-text-primary">Profile</Text>
         </View>
 
-        <View className="mt-6 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
+        <View className="mt-6 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
           <View className="flex-row items-center gap-4 px-4 py-4">
             <View className="h-14 w-14 items-center justify-center rounded-full bg-surface-raised">
               <Ionicons color="#F5F5F7" name="person-outline" size={24} />
@@ -57,7 +68,7 @@ export default function Settings() {
             Goals & Tracking
           </Text>
         </View>
-        <View className="mt-4 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
+        <View className="mt-4 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
           <Pressable
             className="flex-row items-center gap-4 px-4 py-4 active:opacity-80"
             onPress={() => router.push("/settings/goal")}
@@ -82,7 +93,7 @@ export default function Settings() {
         <View className="mt-8">
           <Text className="text-xl font-medium text-text-muted">Account</Text>
         </View>
-        <View className="mt-4 overflow-hidden rounded-[24px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
+        <View className="mt-4 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-card shadow-lg shadow-black/40">
           <Pressable
             className="flex-row items-center gap-4 px-4 py-4 active:opacity-80"
             onPress={handleSignOut}

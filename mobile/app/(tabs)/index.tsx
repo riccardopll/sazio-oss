@@ -1,10 +1,15 @@
 import { useUser } from "@clerk/expo";
 import { Text, View, ScrollView, ActivityIndicator } from "react-native";
-import { SafeAreaView } from "react-native-safe-area-context";
+import {
+  SafeAreaView,
+  useSafeAreaInsets,
+} from "react-native-safe-area-context";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { WeekSelector } from "@/components/WeekSelector";
 import { NutritionProgressCard } from "@/components/NutritionProgressCard";
+import { DailyFoodLogCard } from "@/components/DailyFoodLogCard";
+import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
 import { useState, useMemo } from "react";
 import { DateTime } from "luxon";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
@@ -15,6 +20,7 @@ function getWeekStart(date: DateTime): DateTime {
 
 export default function Dashboard() {
   const trpc = useTRPC();
+  const insets = useSafeAreaInsets();
   const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState(() =>
     DateTime.now().startOf("day"),
@@ -46,6 +52,21 @@ export default function Dashboard() {
       },
     ),
   );
+  const {
+    data: dailyLogs,
+    isFetching: isDailyLogsFetching,
+    isPlaceholderData: isDailyLogsPlaceholderData,
+  } = useQuery(
+    trpc.getDailyFoodLogs.queryOptions(
+      {
+        date: selectedDate.toJSDate(),
+        timezone,
+      },
+      {
+        placeholderData: keepPreviousData,
+      },
+    ),
+  );
   if (weekData === undefined || currentGoal === undefined) {
     return (
       <SafeAreaView
@@ -59,9 +80,10 @@ export default function Dashboard() {
   const selectedDayData = weekData.find(
     (day: { date: string }) => day.date === selectedDate.toISODate(),
   );
+  const bottomContentPadding = getBottomTabBarContentPadding(insets.bottom);
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <View className="px-5 pb-2 pt-4">
+      <View className="px-5 pb-2 pt-1">
         <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
           {selectedDate.toLocaleString({
             weekday: "long",
@@ -77,26 +99,41 @@ export default function Dashboard() {
         selectedDate={selectedDate}
         onSelectDate={setSelectedDate}
       />
-      <ScrollView className="flex-1" contentContainerClassName="px-5 pb-2">
-        <NutritionProgressCard
-          calories={{
-            consumed: selectedDayData?.calories ?? 0,
-            goal: currentGoal?.calorieGoal ?? 0,
-          }}
-          carbs={{
-            consumed: selectedDayData?.carbs ?? 0,
-            goal: currentGoal?.carbsGoal ?? 0,
-          }}
-          fat={{
-            consumed: selectedDayData?.fat ?? 0,
-            goal: currentGoal?.fatGoal ?? 0,
-          }}
-          protein={{
-            consumed: selectedDayData?.protein ?? 0,
-            goal: currentGoal?.proteinGoal ?? 0,
-          }}
-          isLoading={isWeekDataFetching}
-        />
+      <ScrollView
+        className="flex-1"
+        contentContainerClassName="px-3"
+        contentContainerStyle={{ paddingBottom: bottomContentPadding }}
+      >
+        <View className="gap-3">
+          <NutritionProgressCard
+            calories={{
+              consumed: selectedDayData?.calories ?? 0,
+              goal: currentGoal?.calorieGoal ?? 0,
+            }}
+            carbs={{
+              consumed: selectedDayData?.carbs ?? 0,
+              goal: currentGoal?.carbsGoal ?? 0,
+            }}
+            fat={{
+              consumed: selectedDayData?.fat ?? 0,
+              goal: currentGoal?.fatGoal ?? 0,
+            }}
+            protein={{
+              consumed: selectedDayData?.protein ?? 0,
+              goal: currentGoal?.proteinGoal ?? 0,
+            }}
+            isLoading={isWeekDataFetching}
+          />
+          <DailyFoodLogCard
+            entries={dailyLogs}
+            isLoading={
+              isDailyLogsFetching &&
+              (dailyLogs === undefined || isDailyLogsPlaceholderData)
+            }
+            selectedDate={selectedDate}
+            timezone={timezone}
+          />
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

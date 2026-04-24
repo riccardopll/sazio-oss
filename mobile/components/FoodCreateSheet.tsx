@@ -141,7 +141,7 @@ export function FoodCreateSheet({
           <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
             Base Serving
           </Text>
-          <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
             <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
               <Text className="text-base text-text-primary">Size</Text>
               <TextInput
@@ -196,7 +196,7 @@ export function FoodCreateSheet({
           <Text className="mb-3 text-sm leading-5 text-text-secondary">
             These values are stored for the base serving above.
           </Text>
-          <View className="overflow-hidden rounded-[24px] border border-border-subtle bg-surface-input">
+          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
             <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
               <Text className="text-base text-text-primary">Protein (g)</Text>
               <TextInput
