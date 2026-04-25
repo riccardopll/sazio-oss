@@ -1,6 +1,12 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
-import { ActivityIndicator, Text, View } from "react-native";
+import { useState } from "react";
+import type {
+  LayoutChangeEvent,
+  NativeScrollEvent,
+  NativeSyntheticEvent,
+} from "react-native";
+import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
 import { cn, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
@@ -227,6 +233,9 @@ export function NutritionProgressCard({
   protein,
   isLoading,
 }: NutritionProgressCardProps) {
+  const [activePage, setActivePage] = useState(0);
+  const [pageWidth, setPageWidth] = useState(0);
+
   if (isLoading) {
     return (
       <Card>
@@ -244,42 +253,85 @@ export function NutritionProgressCard({
       ? calorieSummary.detail
       : `${calorieSummary.detail} kcal`;
 
+  const pageStyle = pageWidth > 0 ? { width: pageWidth } : undefined;
+
+  function handleLayout(event: LayoutChangeEvent) {
+    setPageWidth(event.nativeEvent.layout.width);
+  }
+
+  function handleMomentumScrollEnd(
+    event: NativeSyntheticEvent<NativeScrollEvent>,
+  ) {
+    if (pageWidth === 0) {
+      return;
+    }
+
+    const nextPage = Math.round(event.nativeEvent.contentOffset.x / pageWidth);
+    setActivePage(Math.max(0, Math.min(nextPage, 1)));
+  }
+
   return (
-    <View className="gap-3">
-      <Card contentClassName="px-4 py-4">
-        <View className="flex-row items-start justify-between gap-3">
-          <View className="min-h-[124px] flex-1 justify-between">
-            <View>
-              <Text className={textStyles.cardSubtitle}>Daily nutrition</Text>
-              <Text className="mt-3 text-[54px] font-bold leading-[54px] tracking-tight text-text-primary">
-                {formatValue(calorieSummary.delta)}
-              </Text>
-              <Text className={cn("mt-1", textStyles.cardSubtitle)}>
-                {calorieSummary.status === "goal not set"
-                  ? "Calorie goal not set"
-                  : `Calories ${calorieSummary.status}`}
-              </Text>
+    <View className="gap-3" onLayout={handleLayout}>
+      <ScrollView
+        horizontal
+        onMomentumScrollEnd={handleMomentumScrollEnd}
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+      >
+        <View className="gap-3" style={pageStyle}>
+          <Card contentClassName="px-4 py-4">
+            <View className="flex-row items-start justify-between gap-3">
+              <View className="min-h-[124px] flex-1 justify-between">
+                <View>
+                  <Text className={textStyles.cardSubtitle}>
+                    Daily nutrition
+                  </Text>
+                  <Text className="mt-3 text-[54px] font-bold leading-[54px] tracking-tight text-text-primary">
+                    {formatValue(calorieSummary.delta)}
+                  </Text>
+                  <Text className={cn("mt-1", textStyles.cardSubtitle)}>
+                    {calorieSummary.status === "goal not set"
+                      ? "Calorie goal not set"
+                      : `Calories ${calorieSummary.status}`}
+                  </Text>
+                </View>
+                <Text className={cn(textStyles.cardFooter, "text-[13px]")}>
+                  {calorieDetail}
+                </Text>
+              </View>
+
+              <ProgressRing
+                color={calorieConfig.color}
+                icon={calorieConfig.icon}
+                iconSize={34}
+                progress={calorieSummary.progress}
+                size={124}
+                strokeWidth={11}
+              />
             </View>
-            <Text className={cn(textStyles.cardFooter, "text-[13px]")}>
-              {calorieDetail}
-            </Text>
+          </Card>
+
+          <View className="flex-row gap-3">
+            <MacroCard label="Protein" metric={protein} variant="protein" />
+            <MacroCard label="Carbs" metric={carbs} variant="carbs" />
+            <MacroCard label="Fat" metric={fat} variant="fat" />
           </View>
-
-          <ProgressRing
-            color={calorieConfig.color}
-            icon={calorieConfig.icon}
-            iconSize={34}
-            progress={calorieSummary.progress}
-            size={124}
-            strokeWidth={11}
-          />
         </View>
-      </Card>
 
-      <View className="flex-row gap-3">
-        <MacroCard label="Protein" metric={protein} variant="protein" />
-        <MacroCard label="Carbs" metric={carbs} variant="carbs" />
-        <MacroCard label="Fat" metric={fat} variant="fat" />
+        <View style={pageStyle} />
+      </ScrollView>
+
+      <View className="flex-row items-center justify-center gap-2">
+        {[0, 1].map((page) => (
+          <View
+            className="h-2 w-2 rounded-full"
+            key={page}
+            style={{
+              backgroundColor:
+                activePage === page ? mobileTheme.text.secondary : "#3A3A40",
+            }}
+          />
+        ))}
       </View>
     </View>
   );

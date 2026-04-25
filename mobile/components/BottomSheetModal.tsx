@@ -1,3 +1,5 @@
+import { Ionicons } from "@expo/vector-icons";
+import { GlassView } from "expo-glass-effect";
 import type { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
@@ -9,6 +11,10 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { cn, controlStyles } from "@/lib/styles";
+import { mobileTheme } from "@/lib/theme";
+
+const CLOSE_BUTTON_SIZE = 40;
+const GLASS_TINT = "rgba(24, 24, 28, 0.72)";
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -67,38 +73,76 @@ export function BottomSheetModal({
               sheetClassName,
             )}
           >
-            <View className="items-center pb-3 pt-4">
-              <View className="h-1.5 w-12 rounded-full bg-border-subtle" />
-            </View>
-            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
-              <Pressable
-                className={cn(controlStyles.textAction, "min-w-16 items-start")}
-                disabled={closeDisabled}
-                onPress={onClose}
-              >
-                <Text className="text-base text-text-secondary">Cancel</Text>
-              </Pressable>
-              <Text className="text-lg font-semibold text-text-primary">
-                {title}
-              </Text>
-              {onAction ? (
+            <View className="px-5 pb-2 pt-2">
+              <View className="items-center">
+                <View className="h-1 w-12 rounded-full bg-border-strong" />
+              </View>
+              <View className="mt-4 flex-row items-center justify-between">
                 <Pressable
-                  className={cn(controlStyles.textAction, "min-w-16 items-end")}
-                  disabled={actionDisabled}
-                  onPress={onAction}
+                  accessibilityLabel="Close"
+                  accessibilityRole="button"
+                  className={cn(closeDisabled && "opacity-40")}
+                  disabled={closeDisabled}
+                  onPress={onClose}
+                  style={{
+                    height: CLOSE_BUTTON_SIZE,
+                    width: CLOSE_BUTTON_SIZE,
+                  }}
                 >
-                  <Text
-                    className={cn(
-                      "text-base font-semibold",
-                      actionDisabled ? "text-text-muted" : "text-text-primary",
-                    )}
+                  <GlassView
+                    colorScheme="dark"
+                    glassEffectStyle="regular"
+                    isInteractive
+                    style={{
+                      alignItems: "center",
+                      borderColor: mobileTheme.border.strong,
+                      borderRadius: CLOSE_BUTTON_SIZE / 2,
+                      borderWidth: 1,
+                      height: CLOSE_BUTTON_SIZE,
+                      justifyContent: "center",
+                      overflow: "hidden",
+                      width: CLOSE_BUTTON_SIZE,
+                    }}
+                    tintColor={GLASS_TINT}
                   >
-                    {actionLabel}
-                  </Text>
+                    <Ionicons
+                      color={mobileTheme.text.primary}
+                      name="close"
+                      size={27}
+                    />
+                  </GlassView>
                 </Pressable>
-              ) : (
-                <View className="w-16" />
-              )}
+
+                <Text className="text-center text-[20px] font-bold leading-6 text-text-primary">
+                  {title}
+                </Text>
+
+                {onAction ? (
+                  <Pressable
+                    className={cn(
+                      controlStyles.textAction,
+                      "items-end",
+                      actionDisabled && "opacity-40",
+                    )}
+                    disabled={actionDisabled}
+                    onPress={onAction}
+                    style={{ width: CLOSE_BUTTON_SIZE }}
+                  >
+                    <Text
+                      className={cn(
+                        "text-[15px] font-semibold",
+                        actionDisabled
+                          ? "text-text-muted"
+                          : "text-text-primary",
+                      )}
+                    >
+                      {actionLabel}
+                    </Text>
+                  </Pressable>
+                ) : (
+                  <View style={{ width: CLOSE_BUTTON_SIZE }} />
+                )}
+              </View>
             </View>
             <SafeAreaView
               className="flex-1 bg-surface-sheet"

@@ -354,7 +354,10 @@ export function DailyFoodLogCard({
         title={getModalTitle(selectedDate)}
         visible={isLogSheetVisible}
       >
-        <ScrollView className="flex-1 px-4" contentContainerClassName="py-6">
+        <ScrollView
+          className="flex-1 px-4"
+          contentContainerClassName="pb-6 pt-3"
+        >
           <FoodLogRows
             entries={displayLogs}
             onDelete={handleDelete}
