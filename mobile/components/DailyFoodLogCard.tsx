@@ -1,6 +1,7 @@
 import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
+import type { ComponentProps } from "react";
 import { useState } from "react";
 import {
   ActivityIndicator,
@@ -47,6 +48,30 @@ interface WeeklySummaryItem extends MacroTotals {
   date: string;
 }
 
+type MacroType = "carbs" | "fat" | "protein";
+type MacroIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
+
+const MACRO_ICON_CONFIG: Record<
+  MacroType,
+  {
+    color: string;
+    icon: MacroIconName;
+  }
+> = {
+  protein: {
+    color: mobileTheme.nutrition.protein,
+    icon: "food-drumstick",
+  },
+  carbs: {
+    color: mobileTheme.nutrition.carbs,
+    icon: "barley",
+  },
+  fat: {
+    color: mobileTheme.nutrition.fat,
+    icon: "peanut",
+  },
+};
+
 function formatNumber(value: number) {
   return Number.isInteger(value) ? value.toString() : value.toFixed(1);
 }
@@ -85,6 +110,14 @@ function withId(ids: number[], id: number) {
   }
 
   return [...ids, id];
+}
+
+function getDominantMacro(entry: DailyFoodLogEntry) {
+  const macros: MacroType[] = ["protein", "carbs", "fat"];
+
+  return macros.reduce((dominantMacro, macro) =>
+    entry[macro] > entry[dominantMacro] ? macro : dominantMacro,
+  );
 }
 
 function subtractEntryTotals(
@@ -129,6 +162,8 @@ function FoodLogRow({
   onDelete: (entry: DailyFoodLogEntry) => void;
   timezone: string;
 }) {
+  const macroIcon = MACRO_ICON_CONFIG[getDominantMacro(entry)];
+
   const renderDeleteAction = () => (
     <View className="w-[72px] items-center justify-center bg-state-destructive">
       <Ionicons color="#FFFFFF" name="trash-outline" size={22} />
@@ -144,18 +179,25 @@ function FoodLogRow({
     >
       <View
         className={cn(
-          "flex-row items-center gap-3 bg-surface-card py-2 pl-3",
+          "flex-row items-center bg-surface-card py-2 pl-1",
           !isLast && "border-b border-border-subtle",
         )}
       >
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-nutrition-calories">
-          <MaterialCommunityIcons
-            color="#FFFFFF"
-            name="food-drumstick"
-            size={22}
-          />
+        <View className="w-12 items-center justify-center">
+          <View
+            className="h-9 w-9 items-center justify-center rounded-full"
+            style={{
+              backgroundColor: macroIcon.color,
+            }}
+          >
+            <MaterialCommunityIcons
+              color="#FFFFFF"
+              name={macroIcon.icon}
+              size={22}
+            />
+          </View>
         </View>
-        <View className="min-w-0 flex-1 flex-row items-center gap-2">
+        <View className="min-w-0 flex-1 flex-row items-center gap-2 pl-2">
           <View className="min-w-0 flex-1">
             <View className="flex-row items-center gap-3">
               <Text
@@ -338,7 +380,7 @@ export function DailyFoodLogCard({
             <ActivityIndicator size="small" color={mobileTheme.state.loading} />
           </View>
         ) : !hasVisibleLogs ? null : (
-          <View className="mt-2 overflow-hidden border-t border-border-subtle">
+          <View className="-mx-2 mt-2 overflow-hidden border-t border-border-subtle">
             <FoodLogRows
               entries={visibleLogs}
               onDelete={handleDelete}
