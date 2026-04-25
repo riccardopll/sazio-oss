@@ -1,4 +1,4 @@
-import { Ionicons } from "@expo/vector-icons";
+import { Ionicons, MaterialCommunityIcons } from "@expo/vector-icons";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { DateTime } from "luxon";
 import { useState } from "react";
@@ -143,31 +143,34 @@ function FoodLogRow({
       onSwipeableOpen={() => onDelete(entry)}
     >
       <View
-        className={`flex-row items-center gap-3 bg-surface-card py-2 ${
+        className={`flex-row items-center gap-3 bg-surface-card py-2 pl-3 ${
           isLast ? "" : "border-b border-border-subtle"
         }`}
       >
-        <View className="h-9 w-9 items-center justify-center rounded-full bg-surface-raised">
-          <Ionicons
-            color={mobileTheme.nutrition.calories}
-            name="fast-food-outline"
-            size={18}
+        <View className="h-9 w-9 items-center justify-center rounded-full bg-nutrition-calories">
+          <MaterialCommunityIcons
+            color="#FFFFFF"
+            name="food-drumstick"
+            size={22}
           />
         </View>
         <View className="min-w-0 flex-1 flex-row items-center gap-2">
           <View className="min-w-0 flex-1">
-            <View className="flex-row items-center justify-between gap-3">
+            <View className="flex-row items-center gap-3">
               <Text
                 className="min-w-0 flex-1 text-[15px] font-semibold leading-5 text-text-primary"
                 numberOfLines={1}
               >
                 {entry.foodName}
               </Text>
-              <Text className="w-[72px] text-right text-[15px] font-semibold leading-5 text-text-primary">
+              <Text
+                className="shrink-0 text-right text-[15px] font-semibold leading-5 text-text-primary"
+                numberOfLines={1}
+              >
                 {formatNumber(entry.calories)} kcal
               </Text>
             </View>
-            <View className="mt-1 flex-row items-center justify-between gap-3">
+            <View className="mt-1 flex-row items-center gap-3">
               <View className="min-w-0 flex-1 flex-row items-center gap-3">
                 <View className="flex-row items-center gap-1.5">
                   <View className="h-2.5 w-2.5 rounded-full bg-nutrition-protein" />
@@ -188,19 +191,15 @@ function FoodLogRow({
                   </Text>
                 </View>
               </View>
-              <Text className="w-[72px] text-right text-xs leading-5 text-text-muted">
+              <Text
+                className="shrink-0 text-right text-sm leading-5 text-text-muted"
+                numberOfLines={1}
+              >
                 {DateTime.fromMillis(entry.createdAt)
                   .setZone(timezone)
                   .toFormat("HH:mm")}
               </Text>
             </View>
-          </View>
-          <View className="w-6 items-end justify-center">
-            <Ionicons
-              color={mobileTheme.text.muted}
-              name="chevron-forward"
-              size={16}
-            />
           </View>
         </View>
       </View>
