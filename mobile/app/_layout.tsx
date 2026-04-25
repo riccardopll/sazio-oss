@@ -5,6 +5,7 @@ import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import { useEffect } from "react";
+import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { TRPCProvider } from "../lib/TRPCProvider";
 import { mobileTheme, navigationTheme } from "../lib/theme";
 import "../global.css";
@@ -17,20 +18,22 @@ export default function RootLayout() {
   }, []);
 
   return (
-    <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
-      <TRPCProvider>
-        <ThemeProvider value={navigationTheme}>
-          <StatusBar style="light" backgroundColor={mobileTheme.surface.app} />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-            }}
-          >
-            <Stack.Screen name="(tabs)" />
-            <Stack.Screen name="(auth)" />
-          </Stack>
-        </ThemeProvider>
-      </TRPCProvider>
-    </ClerkProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+        <TRPCProvider>
+          <ThemeProvider value={navigationTheme}>
+            <StatusBar style="light" />
+            <Stack
+              screenOptions={{
+                headerShown: false,
+              }}
+            >
+              <Stack.Screen name="(tabs)" />
+              <Stack.Screen name="(auth)" />
+            </Stack>
+          </ThemeProvider>
+        </TRPCProvider>
+      </ClerkProvider>
+    </GestureHandlerRootView>
   );
 }

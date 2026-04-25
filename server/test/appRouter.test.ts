@@ -179,6 +179,47 @@ describe("appRouter food logging", () => {
     });
   });
 
+  it("deleteFoodLog removes only the current user's log", async () => {
+    const db = createTestDatabase();
+    const caller = createCaller(db);
+    const otherCaller = createCaller(db, "user_2");
+
+    vi.useFakeTimers();
+    vi.setSystemTime(new Date("2026-03-10T08:00:00.000Z"));
+
+    const [food] = await db
+      .insert(foods)
+      .values({
+        userId: "user_1",
+        name: "Cottage Cheese",
+        servingSize: 100,
+        servingUnit: "g",
+        protein: 11,
+        carbs: 3,
+        fat: 4,
+      })
+      .returning();
+
+    const createdLog = await caller.createFoodLog({
+      foodId: food.id,
+      quantity: 1,
+    });
+
+    await expect(
+      otherCaller.deleteFoodLog({ id: createdLog.id }),
+    ).rejects.toBeDefined();
+
+    const deletedLog = await caller.deleteFoodLog({ id: createdLog.id });
+    const storedLog = await db
+      .select()
+      .from(foodLogs)
+      .where(eq(foodLogs.id, createdLog.id))
+      .then((rows) => rows[0]);
+
+    expect(deletedLog.id).toBe(createdLog.id);
+    expect(storedLog).toBeUndefined();
+  });
+
   it("daily and weekly summaries reflect newly created logs", async () => {
     const db = createTestDatabase();
     const caller = createCaller(db);

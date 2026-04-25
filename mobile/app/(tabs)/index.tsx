@@ -1,4 +1,3 @@
-import { useUser } from "@clerk/expo";
 import { View, ScrollView, ActivityIndicator } from "react-native";
 import {
   SafeAreaView,
@@ -23,7 +22,6 @@ function getWeekStart(date: DateTime) {
 export default function Dashboard() {
   const trpc = useTRPC();
   const insets = useSafeAreaInsets();
-  const { user } = useUser();
   const [selectedDate, setSelectedDate] = useState(() =>
     DateTime.now().startOf("day"),
   );
@@ -85,14 +83,13 @@ export default function Dashboard() {
   const bottomContentPadding = getBottomTabBarContentPadding(insets.bottom);
   return (
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
-      <View className="mb-2">
+      <View>
         <ScreenHeader
           eyebrow={selectedDate.toLocaleString({
             weekday: "long",
             month: "long",
             day: "numeric",
           })}
-          title={`Hi, ${user?.firstName ?? "Anon"}`}
         />
       </View>
       <WeekSelector

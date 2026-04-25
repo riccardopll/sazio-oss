@@ -24,7 +24,11 @@ type MacroIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 
 const METRIC_CONFIG: Record<
   MacroVariant,
-  { color: string; icon: MacroIconName; unit: string }
+  {
+    color: string;
+    icon: MacroIconName;
+    unit: string;
+  }
 > = {
   calories: {
     color: mobileTheme.nutrition.calories,
@@ -107,6 +111,7 @@ function ProgressRing({
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const clampedProgress = Math.max(0, Math.min(progress, 1));
+  const isComplete = clampedProgress >= 1;
   const dashOffset = circumference * (1 - clampedProgress);
   const centerSize = Math.max(size - strokeWidth * 2 - 18, 24);
 
@@ -130,9 +135,11 @@ function ProgressRing({
           fill="none"
           r={radius}
           stroke={color}
-          strokeDasharray={`${circumference} ${circumference}`}
-          strokeDashoffset={dashOffset}
-          strokeLinecap="round"
+          strokeDasharray={
+            isComplete ? undefined : `${circumference} ${circumference}`
+          }
+          strokeDashoffset={isComplete ? undefined : dashOffset}
+          strokeLinecap={isComplete ? "butt" : "round"}
           strokeWidth={strokeWidth}
           transform={`rotate(-90 ${size / 2} ${size / 2})`}
         />
@@ -168,6 +175,7 @@ function MacroCard({
     summary.status === "goal not set"
       ? summary.detail
       : `${formatValue(metric.consumed)}${metricConfig.unit} / ${formatValue(metric.goal)}${metricConfig.unit}`;
+  const remaining = Math.max(metric.goal - metric.consumed, 0);
 
   return (
     <Card
@@ -175,19 +183,23 @@ function MacroCard({
       contentClassName="min-h-[160px] items-center justify-between px-2.5 py-3"
     >
       <View className="items-center">
+        <View className="flex-row items-center justify-center gap-1.5">
+          <View
+            className="h-2 w-2 rounded-full"
+            style={{ backgroundColor: metricConfig.color }}
+          />
+          <Text
+            className="text-center text-sm font-medium leading-5 text-text-secondary"
+            numberOfLines={1}
+          >
+            {label}
+          </Text>
+        </View>
         <Text
-          className="text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
+          className="mt-1.5 text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
           numberOfLines={1}
         >
-          {`${formatValue(summary.delta)}${metricConfig.unit}`}
-        </Text>
-        <Text
-          className="mt-0.5 text-center text-sm font-medium leading-5 text-text-secondary"
-          numberOfLines={2}
-        >
-          {summary.status === "goal not set"
-            ? label
-            : `${label} ${summary.status}`}
+          {`${formatValue(remaining)}${metricConfig.unit}`}
         </Text>
       </View>
 

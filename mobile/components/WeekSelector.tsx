@@ -108,7 +108,7 @@ export function WeekSelector({
                 accessibilityState={{
                   selected: day.hasSame(selectedDate, "day"),
                 }}
-                className="flex-1 items-center py-2"
+                className="flex-1 items-center pb-2 pt-0.5"
                 onPress={() => onSelectDate(day)}
               >
                 <Text

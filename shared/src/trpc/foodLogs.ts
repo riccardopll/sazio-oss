@@ -96,6 +96,32 @@ export const foodLogProcedures = {
       return createdLog;
     }),
 
+  deleteFoodLog: protectedProcedure
+    .input(
+      z.object({
+        id: z.number().int(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const { db, userId } = ctx;
+
+      const [deletedLog] = await db
+        .delete(foodLogs)
+        .where(and(eq(foodLogs.id, input.id), eq(foodLogs.userId, userId)))
+        .returning({
+          id: foodLogs.id,
+        });
+
+      if (!deletedLog) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Food log not found",
+        });
+      }
+
+      return deletedLog;
+    }),
+
   getDailySummary: protectedProcedure
     .input(dateTimezoneInput)
     .query(async ({ ctx, input }) => {

@@ -6,7 +6,7 @@ interface ScreenHeaderProps {
   embedded?: boolean;
   eyebrow?: string;
   leftAccessory?: ReactNode;
-  title: string;
+  title?: string;
 }
 
 export function ScreenHeader({
@@ -25,14 +25,18 @@ export function ScreenHeader({
       {leftAccessory}
       <View className="min-w-0 flex-1">
         {eyebrow ? <Text className={textStyles.eyebrow}>{eyebrow}</Text> : null}
-        <Text
-          className={
-            eyebrow ? textStyles.screenTitleWithEyebrow : textStyles.screenTitle
-          }
-          numberOfLines={1}
-        >
-          {title}
-        </Text>
+        {title ? (
+          <Text
+            className={
+              eyebrow
+                ? textStyles.screenTitleWithEyebrow
+                : textStyles.screenTitle
+            }
+            numberOfLines={1}
+          >
+            {title}
+          </Text>
+        ) : null}
       </View>
     </View>
   );
