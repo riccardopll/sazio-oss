@@ -77,6 +77,9 @@ importers:
       expo-font:
         specifier: ~55.0.4
         version: 55.0.4(expo@55.0.5)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0)(utf-8-validate@6.0.6))(react@19.2.0)
+      expo-glass-effect:
+        specifier: ~55.0.8
+        version: 55.0.8(expo@55.0.5)(react-native@0.83.2(@babel/core@7.29.0)(@types/react@19.2.14)(bufferutil@4.1.0)(react@19.2.0)(utf-8-validate@6.0.6))(react@19.2.0)
       expo-haptics:
         specifier: ~55.0.8
         version: 55.0.8(expo@55.0.5)
