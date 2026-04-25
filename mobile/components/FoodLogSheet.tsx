@@ -93,6 +93,9 @@ export function FoodLogSheet({
         ]);
         onClose();
       },
+      onError: (error) => {
+        Alert.alert("Unable to log food", error.message);
+      },
     }),
   );
 

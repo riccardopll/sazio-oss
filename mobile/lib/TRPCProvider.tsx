@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import type { AppRouter } from "@sazio-oss/shared";
 import { createTRPCClient, httpBatchLink, loggerLink } from "@trpc/client";
 import { useRef, useState } from "react";
+import { env } from "./env";
 import { TRPCContextProvider } from "./trpc";
 
 export function TRPCProvider({ children }: { children: React.ReactNode }) {
@@ -15,9 +16,7 @@ export function TRPCProvider({ children }: { children: React.ReactNode }) {
       links: [
         loggerLink({ enabled: () => __DEV__ }),
         httpBatchLink({
-          url:
-            (process.env.EXPO_PUBLIC_API_URL || "http://localhost:8787") +
-            "/trpc",
+          url: `${env.apiUrl}/trpc`,
           async headers() {
             const token = await getTokenRef.current();
             return token ? { Authorization: `Bearer ${token}` } : {};

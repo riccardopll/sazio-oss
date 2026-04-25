@@ -25,7 +25,7 @@ export function BottomTabBarWithLogAction({
 }: BottomTabBarProps) {
   const [isLogFoodVisible, setIsLogFoodVisible] = useState(false);
   const tabBarContent = (
-    <View className="flex-row items-center">
+    <View className={tabBarStyles.tabContent}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const isFocused = state.index === index;

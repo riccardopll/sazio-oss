@@ -14,6 +14,8 @@ Nutrition/macro tracking app. pnpm monorepo: Expo mobile app, Hono/Cloudflare Wo
 - Use `cn` from `mobile/lib/styles.ts` as the standard path for composed or conditional classes.
 - Mobile UI styling is handled through NativeWind class names. Inline `style` props are only allowed for runtime-calculated dimensions/insets or style-only third-party APIs that NativeWind cannot express.
 - Repeated mobile style tokens belong in `mobile/lib/styles.ts`; reusable mobile color/theme values belong in `mobile/lib/theme.ts`.
+- Do not start, launch, terminate, restart, or otherwise control the iOS simulator or installed app yourself unless explicitly requested.
+- After every style modification, take a screenshot from the already running simulator and inspect the visual changes.
 
 ## Domain Knowledge
 

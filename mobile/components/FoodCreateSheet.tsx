@@ -67,6 +67,9 @@ export function FoodCreateSheet({
         await queryClient.invalidateQueries(trpc.listFoods.pathFilter());
         onCreated(food);
       },
+      onError: (error) => {
+        Alert.alert("Unable to create food", error.message);
+      },
     }),
   );
 

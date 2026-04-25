@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { cn, controlStyles, nutritionStyles, textStyles } from "@/lib/styles";
+import { cn, nutritionStyles, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
 import { useTRPC } from "@/lib/trpc";
 import { Card } from "./Card";
@@ -360,20 +360,16 @@ export function DailyFoodLogCard({
       <Card
         contentClassName={cn("px-4 pt-4", hasVisibleLogs ? "pb-2" : "pb-4")}
       >
-        <View className="flex-row items-start justify-between gap-4">
-          <View className="flex-1">
-            <Text className={textStyles.cardSubtitle}>{title}</Text>
-            {!isLoading && displayLogs.length === 0 ? (
-              <Text className="mt-3 text-base font-semibold text-text-primary">
-                Nothing logged yet
-              </Text>
-            ) : null}
-          </View>
+        <View className="flex-row items-center justify-between gap-4">
+          <Text className={cn(textStyles.cardSubtitle, "min-w-0 flex-1")}>
+            {title}
+          </Text>
           {displayLogs.length > 0 ? (
             <Pressable
               accessibilityLabel="See all logged food"
               accessibilityRole="button"
-              className={cn(controlStyles.hitTarget, "flex-row gap-1 pl-3")}
+              className="flex-row items-center gap-1 pl-3"
+              hitSlop={12}
               onPress={() => setIsLogSheetVisible(true)}
             >
               <Text className="text-sm font-medium text-text-secondary">
@@ -387,6 +383,11 @@ export function DailyFoodLogCard({
             </Pressable>
           ) : null}
         </View>
+        {!isLoading && displayLogs.length === 0 ? (
+          <Text className="mt-3 text-base font-semibold text-text-primary">
+            Nothing logged yet
+          </Text>
+        ) : null}
 
         {isLoading ? (
           <View className="items-center justify-center py-8">

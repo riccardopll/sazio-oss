@@ -78,6 +78,7 @@ export const sheetStyles = {
 
 export const tabBarStyles = {
   safeArea: "absolute bottom-0 left-0 right-0 items-center px-4 pb-2.5",
+  tabContent: "h-14 flex-row items-center justify-center",
   tabButton: "h-14 w-[88px] items-center justify-center",
   actionButton: "h-14 w-14 items-center justify-center",
 } as const;
@@ -102,19 +103,24 @@ export const tabBarNativeStyles = {
     gap: 105,
   } satisfies ViewStyle,
   glassAction: {
+    alignItems: "center",
     borderColor: mobileTheme.border.strong,
     borderRadius: 28,
     borderWidth: 1,
     height: 56,
+    justifyContent: "center",
     overflow: "hidden",
     width: 56,
   } satisfies ViewStyle,
   glassBar: {
+    alignItems: "center",
     borderColor: mobileTheme.border.subtle,
     borderRadius: 28,
     borderWidth: 1,
     height: 56,
+    justifyContent: "center",
     overflow: "hidden",
+    width: 176,
   } satisfies ViewStyle,
 } as const;
 

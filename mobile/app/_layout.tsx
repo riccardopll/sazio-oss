@@ -6,20 +6,22 @@ import { StatusBar } from "expo-status-bar";
 import * as SystemUI from "expo-system-ui";
 import { useEffect } from "react";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import { env } from "@/lib/env";
 import { TRPCProvider } from "../lib/TRPCProvider";
 import { mobileTheme, navigationTheme } from "../lib/theme";
 import "../global.css";
 
 export default function RootLayout() {
-  const publishableKey = process.env.EXPO_PUBLIC_CLERK_PUBLISHABLE_KEY!;
-
   useEffect(() => {
     void SystemUI.setBackgroundColorAsync(mobileTheme.surface.app);
   }, []);
 
   return (
     <GestureHandlerRootView className="flex-1">
-      <ClerkProvider tokenCache={tokenCache} publishableKey={publishableKey}>
+      <ClerkProvider
+        tokenCache={tokenCache}
+        publishableKey={env.clerkPublishableKey}
+      >
         <TRPCProvider>
           <ThemeProvider value={navigationTheme}>
             <StatusBar style="light" />
