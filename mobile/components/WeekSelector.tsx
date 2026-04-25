@@ -8,7 +8,7 @@ import {
   type NativeScrollEvent,
 } from "react-native";
 import { DateTime } from "luxon";
-import { screenStyles } from "@/lib/styles";
+import { cn, screenStyles } from "@/lib/styles";
 
 interface WeekSelectorProps {
   selectedDate: DateTime;
@@ -97,7 +97,7 @@ export function WeekSelector({
         }
         renderItem={({ item }) => (
           <View
-            className={`flex-row ${screenStyles.content}`}
+            className={cn("flex-row", screenStyles.content)}
             style={{ width }}
           >
             {item.days.map((day, index) => (
@@ -112,33 +112,36 @@ export function WeekSelector({
                 onPress={() => onSelectDate(day)}
               >
                 <Text
-                  className={
+                  className={cn(
+                    "mb-1 text-xs",
                     day.month !== selectedDate.month
-                      ? "mb-1 text-xs text-text-muted"
-                      : "mb-1 text-xs text-text-secondary"
-                  }
+                      ? "text-text-muted"
+                      : "text-text-secondary",
+                  )}
                 >
                   {DAY_NAMES[index]}
                 </Text>
                 <View
-                  className={`h-11 w-11 items-center justify-center rounded-full ${
+                  className={cn(
+                    "h-11 w-11 items-center justify-center rounded-full",
                     day.hasSame(selectedDate, "day")
                       ? "border border-white bg-white"
                       : day.hasSame(today, "day")
                         ? "border border-border-strong bg-surface-raised"
                         : day.month !== selectedDate.month
                           ? "border border-transparent bg-surface-app"
-                          : "border border-transparent bg-surface-card"
-                  }`}
+                          : "border border-transparent bg-surface-card",
+                  )}
                 >
                   <Text
-                    className={`text-base font-semibold ${
+                    className={cn(
+                      "text-base font-semibold",
                       day.hasSame(selectedDate, "day")
                         ? "text-text-inverse"
                         : day.month !== selectedDate.month
                           ? "text-text-muted"
-                          : "text-text-primary"
-                    }`}
+                          : "text-text-primary",
+                    )}
                   >
                     {day.day}
                   </Text>

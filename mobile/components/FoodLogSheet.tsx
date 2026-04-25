@@ -13,7 +13,7 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { controlStyles } from "@/lib/styles";
+import { cn, controlStyles } from "@/lib/styles";
 
 export type FoodLogSheetParams = {
   initialSearch?: string;
@@ -153,7 +153,10 @@ export function FoodLogSheet({
           />
           <Pressable
             onPress={handleCreateFood}
-            className={`mt-3 rounded-full border border-border-strong bg-surface-raised px-4 py-3 ${controlStyles.textAction}`}
+            className={cn(
+              "mt-3 rounded-full border border-border-strong bg-surface-raised px-4 py-3",
+              controlStyles.textAction,
+            )}
           >
             <Text className="text-center text-sm font-semibold text-text-primary">
               {search.trim()
@@ -255,7 +258,12 @@ export function FoodLogSheet({
                   <Pressable
                     key={food.id}
                     onPress={() => setSelectedFood(food)}
-                    className={`px-4 py-4 ${index === foods.length - 1 ? "" : "border-b border-border-subtle"} ${isSelected ? "bg-surface-raised" : ""}`}
+                    className={cn(
+                      "px-4 py-4",
+                      index !== foods.length - 1 &&
+                        "border-b border-border-subtle",
+                      isSelected && "bg-surface-raised",
+                    )}
                   >
                     <View className="flex-row items-start justify-between gap-4">
                       <View className="flex-1">

@@ -8,7 +8,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { controlStyles } from "@/lib/styles";
+import { cn, controlStyles } from "@/lib/styles";
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -62,14 +62,17 @@ export function BottomSheetModal({
           className="w-full justify-end"
         >
           <View
-            className={`min-h-80 max-h-[92%] w-full overflow-hidden rounded-t-[28px] bg-surface-sheet ${sheetClassName}`}
+            className={cn(
+              "min-h-80 max-h-[92%] w-full overflow-hidden rounded-t-[28px] bg-surface-sheet",
+              sheetClassName,
+            )}
           >
             <View className="items-center pb-3 pt-4">
               <View className="h-1.5 w-12 rounded-full bg-border-subtle" />
             </View>
             <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-4">
               <Pressable
-                className={`${controlStyles.textAction} min-w-16 items-start`}
+                className={cn(controlStyles.textAction, "min-w-16 items-start")}
                 disabled={closeDisabled}
                 onPress={onClose}
               >
@@ -80,12 +83,15 @@ export function BottomSheetModal({
               </Text>
               {onAction ? (
                 <Pressable
-                  className={`${controlStyles.textAction} min-w-16 items-end`}
+                  className={cn(controlStyles.textAction, "min-w-16 items-end")}
                   disabled={actionDisabled}
                   onPress={onAction}
                 >
                   <Text
-                    className={`text-base font-semibold ${actionDisabled ? "text-text-muted" : "text-text-primary"}`}
+                    className={cn(
+                      "text-base font-semibold",
+                      actionDisabled ? "text-text-muted" : "text-text-primary",
+                    )}
                   >
                     {actionLabel}
                   </Text>

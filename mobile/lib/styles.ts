@@ -20,6 +20,7 @@ export const textStyles = {
     "text-sm font-medium uppercase tracking-[1.1px] text-text-muted",
   cardTitle: "text-lg font-semibold text-text-primary",
   cardSubtitle: "text-base font-medium leading-5 text-text-secondary",
+  cardFooter: "text-xs text-text-muted",
   body: "text-base text-text-secondary",
   caption: "text-sm text-text-muted",
 } as const;

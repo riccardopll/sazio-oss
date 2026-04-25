@@ -17,7 +17,7 @@ import { Card } from "@/components/Card";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
-import { controlStyles, screenStyles, textStyles } from "@/lib/styles";
+import { cn, controlStyles, screenStyles, textStyles } from "@/lib/styles";
 
 const MAX_MACRO = 300;
 
@@ -183,14 +183,17 @@ export default function GoalScreen() {
     <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
       <ScrollView
         className="flex-1"
-        contentContainerClassName={`${screenStyles.content} pb-8`}
+        contentContainerClassName={cn(screenStyles.content, "pb-8")}
       >
         <ScreenHeader
           embedded
           eyebrow="My Goal"
           leftAccessory={
             <Pressable
-              className={`${controlStyles.hitTarget} rounded-full active:opacity-80`}
+              className={cn(
+                controlStyles.hitTarget,
+                "rounded-full active:opacity-80",
+              )}
               onPress={() => router.back()}
             >
               <Ionicons
@@ -276,18 +279,20 @@ export default function GoalScreen() {
         </Card>
 
         <Pressable
-          className={`mt-6 rounded-[24px] px-5 py-4 ${
-            setTodayGoal.isPending ? "bg-surface-raised" : "bg-text-primary"
-          }`}
+          className={cn(
+            "mt-6 rounded-[24px] px-5 py-4",
+            setTodayGoal.isPending ? "bg-surface-raised" : "bg-text-primary",
+          )}
           disabled={setTodayGoal.isPending || deleteGoal.isPending}
           onPress={handleSave}
         >
           <Text
-            className={`text-center text-base font-semibold ${
+            className={cn(
+              "text-center text-base font-semibold",
               setTodayGoal.isPending
                 ? "text-text-secondary"
-                : "text-text-inverse"
-            }`}
+                : "text-text-inverse",
+            )}
           >
             {setTodayGoal.isPending
               ? "Saving..."
@@ -298,7 +303,7 @@ export default function GoalScreen() {
         </Pressable>
         {currentGoal ? (
           <Pressable
-            className={`mt-4 ${controlStyles.textAction}`}
+            className={cn("mt-4", controlStyles.textAction)}
             disabled={setTodayGoal.isPending || deleteGoal.isPending}
             onPress={handleDelete}
           >

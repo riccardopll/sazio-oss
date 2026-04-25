@@ -11,7 +11,7 @@ import {
 import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
 import { Card } from "@/components/Card";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { cardStyles, screenStyles, textStyles } from "@/lib/styles";
+import { cardStyles, cn, screenStyles, textStyles } from "@/lib/styles";
 import { useTRPC } from "@/lib/trpc";
 
 export default function Settings() {
@@ -66,7 +66,7 @@ export default function Settings() {
         </View>
         <Card className="mt-4" contentClassName="p-0">
           <Pressable
-            className={`${cardStyles.row} active:opacity-80`}
+            className={cn(cardStyles.row, "active:opacity-80")}
             onPress={() => router.push("/settings/goal")}
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">
@@ -89,7 +89,7 @@ export default function Settings() {
         </View>
         <Card className="mt-4" contentClassName="p-0">
           <Pressable
-            className={`${cardStyles.row} active:opacity-80`}
+            className={cn(cardStyles.row, "active:opacity-80")}
             onPress={handleSignOut}
           >
             <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">

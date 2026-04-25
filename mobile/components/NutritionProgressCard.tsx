@@ -2,8 +2,8 @@ import { MaterialCommunityIcons } from "@expo/vector-icons";
 import type { ComponentProps } from "react";
 import { ActivityIndicator, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
+import { cn, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
-import { textStyles } from "@/lib/styles";
 import { Card } from "./Card";
 
 interface NutritionData {
@@ -180,7 +180,7 @@ function MacroCard({
   return (
     <Card
       className="flex-1"
-      contentClassName="min-h-[160px] items-center justify-between px-2.5 py-3"
+      contentClassName="min-h-[160px] items-center justify-between px-2.5 pb-2.5 pt-2.5"
     >
       <View className="items-center">
         <View className="flex-row items-center justify-center gap-1.5">
@@ -189,14 +189,14 @@ function MacroCard({
             style={{ backgroundColor: metricConfig.color }}
           />
           <Text
-            className="text-center text-sm font-medium leading-5 text-text-secondary"
+            className={cn(textStyles.cardSubtitle, "text-center")}
             numberOfLines={1}
           >
             {label}
           </Text>
         </View>
         <Text
-          className="mt-1.5 text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
+          className="mt-2 text-center text-[25px] font-bold leading-7 tracking-tight text-text-primary"
           numberOfLines={1}
         >
           {`${formatValue(remaining)}${metricConfig.unit}`}
@@ -213,7 +213,7 @@ function MacroCard({
         />
       </View>
 
-      <Text className="self-center text-center text-[11px] text-text-muted">
+      <Text className={cn(textStyles.cardFooter, "self-center text-center")}>
         {detail}
       </Text>
     </Card>
@@ -239,35 +239,39 @@ export function NutritionProgressCard({
 
   const calorieSummary = getMetricSummary(calories);
   const calorieConfig = METRIC_CONFIG.calories;
+  const calorieDetail =
+    calorieSummary.status === "goal not set"
+      ? calorieSummary.detail
+      : `${calorieSummary.detail} kcal`;
 
   return (
     <View className="gap-3">
       <Card contentClassName="px-4 py-4">
-        <View className="flex-row items-center justify-between gap-3">
-          <View className="flex-1">
-            <Text className={textStyles.cardSubtitle}>Daily nutrition</Text>
-            <Text className="mt-3 text-[54px] font-bold leading-[54px] tracking-tight text-text-primary">
-              {formatValue(calorieSummary.delta)}
-            </Text>
-            <Text className="mt-2 text-lg text-text-secondary">
-              {calorieSummary.status === "goal not set"
-                ? "Calorie goal not set"
-                : `Calories ${calorieSummary.status}`}
-            </Text>
-            <Text className="mt-2 text-sm text-text-muted">
-              {calorieSummary.status === "goal not set"
-                ? calorieSummary.detail
-                : `${calorieSummary.detail} kcal`}
+        <View className="flex-row items-start justify-between gap-3">
+          <View className="min-h-[124px] flex-1 justify-between">
+            <View>
+              <Text className={textStyles.cardSubtitle}>Daily nutrition</Text>
+              <Text className="mt-3 text-[54px] font-bold leading-[54px] tracking-tight text-text-primary">
+                {formatValue(calorieSummary.delta)}
+              </Text>
+              <Text className={cn("mt-1", textStyles.cardSubtitle)}>
+                {calorieSummary.status === "goal not set"
+                  ? "Calorie goal not set"
+                  : `Calories ${calorieSummary.status}`}
+              </Text>
+            </View>
+            <Text className={cn(textStyles.cardFooter, "text-[13px]")}>
+              {calorieDetail}
             </Text>
           </View>
 
           <ProgressRing
             color={calorieConfig.color}
             icon={calorieConfig.icon}
-            iconSize={40}
+            iconSize={34}
             progress={calorieSummary.progress}
-            size={148}
-            strokeWidth={13}
+            size={124}
+            strokeWidth={11}
           />
         </View>
       </Card>

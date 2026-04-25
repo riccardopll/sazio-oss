@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { controlStyles, textStyles } from "@/lib/styles";
+import { cn, controlStyles, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
 import { useTRPC } from "@/lib/trpc";
 import { Card } from "./Card";
@@ -143,9 +143,10 @@ function FoodLogRow({
       onSwipeableOpen={() => onDelete(entry)}
     >
       <View
-        className={`flex-row items-center gap-3 bg-surface-card py-2 pl-3 ${
-          isLast ? "" : "border-b border-border-subtle"
-        }`}
+        className={cn(
+          "flex-row items-center gap-3 bg-surface-card py-2 pl-3",
+          !isLast && "border-b border-border-subtle",
+        )}
       >
         <View className="h-9 w-9 items-center justify-center rounded-full bg-nutrition-calories">
           <MaterialCommunityIcons
@@ -301,10 +302,12 @@ export function DailyFoodLogCard({
 
   return (
     <>
-      <Card contentClassName={hasVisibleLogs ? "px-4 pb-2 pt-4" : "px-4 py-4"}>
-        <View className="flex-row items-center justify-between gap-4">
+      <Card
+        contentClassName={cn("px-4 pt-4", hasVisibleLogs ? "pb-2" : "pb-4")}
+      >
+        <View className="flex-row items-start justify-between gap-4">
           <View className="flex-1">
-            <Text className={textStyles.cardTitle}>{title}</Text>
+            <Text className={textStyles.cardSubtitle}>{title}</Text>
             {!isLoading && displayLogs.length === 0 ? (
               <Text className="mt-3 text-base font-semibold text-text-primary">
                 Nothing logged yet
@@ -315,7 +318,7 @@ export function DailyFoodLogCard({
             <Pressable
               accessibilityLabel="See all logged food"
               accessibilityRole="button"
-              className={`${controlStyles.hitTarget} flex-row gap-1 pl-3`}
+              className={cn(controlStyles.hitTarget, "flex-row gap-1 pl-3")}
               onPress={() => setIsLogSheetVisible(true)}
             >
               <Text className="text-sm font-medium text-text-secondary">
