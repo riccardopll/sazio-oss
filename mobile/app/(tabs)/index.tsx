@@ -69,10 +69,7 @@ export default function Dashboard() {
   );
   if (weekData === undefined || currentGoal === undefined) {
     return (
-      <SafeAreaView
-        className="flex-1 items-center justify-center bg-surface-app"
-        edges={["top"]}
-      >
+      <SafeAreaView className={screenStyles.centeredAppRoot} edges={["top"]}>
         <ActivityIndicator size="large" color={mobileTheme.state.loading} />
       </SafeAreaView>
     );
@@ -82,7 +79,7 @@ export default function Dashboard() {
   );
   const bottomContentPadding = getBottomTabBarContentPadding(insets.bottom);
   return (
-    <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
+    <SafeAreaView className={screenStyles.appRoot} edges={["top"]}>
       <View>
         <ScreenHeader
           eyebrow={selectedDate.toLocaleString({

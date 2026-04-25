@@ -8,8 +8,8 @@ import type {
 } from "react-native";
 import { ActivityIndicator, ScrollView, Text, View } from "react-native";
 import Svg, { Circle } from "react-native-svg";
-import { cn, textStyles } from "@/lib/styles";
-import { mobileTheme } from "@/lib/theme";
+import { cn, nutritionStyles, textStyles } from "@/lib/styles";
+import { mobileTheme, nutritionTheme } from "@/lib/theme";
 import { Card } from "./Card";
 
 interface NutritionData {
@@ -31,28 +31,23 @@ type MacroIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 const METRIC_CONFIG: Record<
   MacroVariant,
   {
-    color: string;
     icon: MacroIconName;
     unit: string;
   }
 > = {
   calories: {
-    color: mobileTheme.nutrition.calories,
     icon: "fire",
     unit: "",
   },
   carbs: {
-    color: mobileTheme.nutrition.carbs,
     icon: "grain",
     unit: "g",
   },
   fat: {
-    color: mobileTheme.nutrition.fat,
     icon: "egg",
     unit: "g",
   },
   protein: {
-    color: mobileTheme.nutrition.protein,
     icon: "food-drumstick",
     unit: "g",
   },
@@ -106,6 +101,8 @@ function ProgressRing({
   size,
   strokeWidth,
   iconSize,
+  centerClassName,
+  className,
 }: {
   color: string;
   icon?: MacroIconName;
@@ -113,19 +110,17 @@ function ProgressRing({
   size: number;
   strokeWidth: number;
   iconSize: number;
+  centerClassName: string;
+  className: string;
 }) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
   const clampedProgress = Math.max(0, Math.min(progress, 1));
   const isComplete = clampedProgress >= 1;
   const dashOffset = circumference * (1 - clampedProgress);
-  const centerSize = Math.max(size - strokeWidth * 2 - 18, 24);
 
   return (
-    <View
-      className="items-center justify-center"
-      style={{ height: size, width: size }}
-    >
+    <View className={cn("items-center justify-center", className)}>
       <Svg height={size} width={size}>
         <Circle
           cx={size / 2}
@@ -151,14 +146,7 @@ function ProgressRing({
         />
       </Svg>
       {icon ? (
-        <View
-          className="absolute items-center justify-center rounded-full"
-          style={{
-            backgroundColor: mobileTheme.surface.card,
-            height: centerSize,
-            width: centerSize,
-          }}
-        >
+        <View className={cn(nutritionStyles.ringCenter, centerClassName)}>
           <MaterialCommunityIcons color={color} name={icon} size={iconSize} />
         </View>
       ) : null}
@@ -176,6 +164,8 @@ function MacroCard({
   variant: Exclude<MacroVariant, "calories">;
 }) {
   const metricConfig = METRIC_CONFIG[variant];
+  const metricTheme = nutritionTheme[variant];
+  const metricStyles = nutritionStyles[variant];
   const summary = getMetricSummary(metric);
   const detail =
     summary.status === "goal not set"
@@ -190,10 +180,7 @@ function MacroCard({
     >
       <View className="items-center">
         <View className="flex-row items-center justify-center gap-1.5">
-          <View
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: metricConfig.color }}
-          />
+          <View className={cn(nutritionStyles.dot, metricStyles.dot)} />
           <Text
             className={cn(textStyles.cardSubtitle, "text-center")}
             numberOfLines={1}
@@ -211,7 +198,9 @@ function MacroCard({
 
       <View className="items-center justify-center py-2">
         <ProgressRing
-          color={metricConfig.color}
+          color={metricTheme.color}
+          centerClassName="h-8 w-8"
+          className="h-[66px] w-[66px]"
           iconSize={20}
           progress={summary.progress}
           size={66}
@@ -248,6 +237,7 @@ export function NutritionProgressCard({
 
   const calorieSummary = getMetricSummary(calories);
   const calorieConfig = METRIC_CONFIG.calories;
+  const calorieTheme = nutritionTheme.calories;
   const calorieDetail =
     calorieSummary.status === "goal not set"
       ? calorieSummary.detail
@@ -301,7 +291,9 @@ export function NutritionProgressCard({
               </View>
 
               <ProgressRing
-                color={calorieConfig.color}
+                color={calorieTheme.color}
+                centerClassName="h-[84px] w-[84px]"
+                className="h-[124px] w-[124px]"
                 icon={calorieConfig.icon}
                 iconSize={34}
                 progress={calorieSummary.progress}
@@ -324,12 +316,11 @@ export function NutritionProgressCard({
       <View className="flex-row items-center justify-center gap-2">
         {[0, 1].map((page) => (
           <View
-            className="h-2 w-2 rounded-full"
+            className={cn(
+              "h-2 w-2 rounded-full",
+              activePage === page ? "bg-text-secondary" : "bg-[#3A3A40]",
+            )}
             key={page}
-            style={{
-              backgroundColor:
-                activePage === page ? mobileTheme.text.secondary : "#3A3A40",
-            }}
           />
         ))}
       </View>

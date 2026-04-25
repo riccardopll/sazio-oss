@@ -13,7 +13,13 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { cn, controlStyles } from "@/lib/styles";
+import {
+  cn,
+  controlStyles,
+  formStyles,
+  nutritionStyles,
+  textStyles,
+} from "@/lib/styles";
 
 export type FoodLogSheetParams = {
   initialSearch?: string;
@@ -140,12 +146,10 @@ export function FoodLogSheet({
         contentContainerClassName="pb-8"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="mt-6">
-          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-            Search
-          </Text>
+        <View className={formStyles.section}>
+          <Text className={formStyles.label}>Search</Text>
           <TextInput
-            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-[16px] text-text-primary"
+            className={formStyles.input}
             value={search}
             onChangeText={setSearch}
             placeholder="Search your foods"
@@ -167,7 +171,7 @@ export function FoodLogSheet({
         </View>
 
         {selectedFood && previewMacros ? (
-          <View className="mt-6 overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
+          <View className={formStyles.panelWithTopMargin}>
             <View className="border-b border-border-subtle px-4 py-4">
               <Text className="text-lg font-semibold text-text-primary">
                 {selectedFood.name}
@@ -176,7 +180,7 @@ export function FoodLogSheet({
                 {`Per ${selectedFood.servingSize}${selectedFood.servingUnit}`}
               </Text>
             </View>
-            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+            <View className={formStyles.rowWithDivider}>
               <Text className="text-base text-text-primary">Quantity</Text>
               <TextInput
                 value={quantity}
@@ -187,41 +191,59 @@ export function FoodLogSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
+                className={formStyles.inlineInput}
               />
             </View>
             <View className="px-4 py-4">
-              <Text className="text-sm font-medium uppercase text-text-muted">
-                Preview
-              </Text>
+              <Text className={textStyles.sectionTitle}>Preview</Text>
               <View className="mt-3 flex-row flex-wrap gap-3">
-                <View className="min-w-[92px] rounded-2xl bg-surface-raised px-3 py-3">
+                <View className={nutritionStyles.previewTile}>
                   <Text className="text-xs uppercase text-text-muted">
                     Calories
                   </Text>
-                  <Text className="mt-1 text-lg font-semibold text-nutrition-calories">
+                  <Text
+                    className={cn(
+                      nutritionStyles.previewValue,
+                      nutritionStyles.calories.text,
+                    )}
+                  >
                     {formatNumber(previewCalories)}
                   </Text>
                 </View>
-                <View className="min-w-[92px] rounded-2xl bg-surface-raised px-3 py-3">
+                <View className={nutritionStyles.previewTile}>
                   <Text className="text-xs uppercase text-text-muted">
                     Protein
                   </Text>
-                  <Text className="mt-1 text-lg font-semibold text-nutrition-protein">
+                  <Text
+                    className={cn(
+                      nutritionStyles.previewValue,
+                      nutritionStyles.protein.text,
+                    )}
+                  >
                     {formatNumber(previewMacros.protein)}g
                   </Text>
                 </View>
-                <View className="min-w-[92px] rounded-2xl bg-surface-raised px-3 py-3">
+                <View className={nutritionStyles.previewTile}>
                   <Text className="text-xs uppercase text-text-muted">
                     Carbs
                   </Text>
-                  <Text className="mt-1 text-lg font-semibold text-nutrition-carbs">
+                  <Text
+                    className={cn(
+                      nutritionStyles.previewValue,
+                      nutritionStyles.carbs.text,
+                    )}
+                  >
                     {formatNumber(previewMacros.carbs)}g
                   </Text>
                 </View>
-                <View className="min-w-[92px] rounded-2xl bg-surface-raised px-3 py-3">
+                <View className={nutritionStyles.previewTile}>
                   <Text className="text-xs uppercase text-text-muted">Fat</Text>
-                  <Text className="mt-1 text-lg font-semibold text-nutrition-fat">
+                  <Text
+                    className={cn(
+                      nutritionStyles.previewValue,
+                      nutritionStyles.fat.text,
+                    )}
+                  >
                     {formatNumber(previewMacros.fat)}g
                   </Text>
                 </View>
@@ -230,11 +252,9 @@ export function FoodLogSheet({
           </View>
         ) : null}
 
-        <View className="mt-6">
-          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-            Foods
-          </Text>
-          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
+        <View className={formStyles.section}>
+          <Text className={formStyles.label}>Foods</Text>
+          <View className={formStyles.panel}>
             {foodsQuery.isLoading ? (
               <View className="items-center justify-center px-4 py-8">
                 <ActivityIndicator

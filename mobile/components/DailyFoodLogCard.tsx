@@ -13,7 +13,7 @@ import {
 } from "react-native";
 import Swipeable from "react-native-gesture-handler/ReanimatedSwipeable";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { cn, controlStyles, textStyles } from "@/lib/styles";
+import { cn, controlStyles, nutritionStyles, textStyles } from "@/lib/styles";
 import { mobileTheme } from "@/lib/theme";
 import { useTRPC } from "@/lib/trpc";
 import { Card } from "./Card";
@@ -54,20 +54,16 @@ type MacroIconName = ComponentProps<typeof MaterialCommunityIcons>["name"];
 const MACRO_ICON_CONFIG: Record<
   MacroType,
   {
-    color: string;
     icon: MacroIconName;
   }
 > = {
   protein: {
-    color: mobileTheme.nutrition.protein,
     icon: "food-drumstick",
   },
   carbs: {
-    color: mobileTheme.nutrition.carbs,
     icon: "barley",
   },
   fat: {
-    color: mobileTheme.nutrition.fat,
     icon: "peanut",
   },
 };
@@ -162,7 +158,9 @@ function FoodLogRow({
   onDelete: (entry: DailyFoodLogEntry) => void;
   timezone: string;
 }) {
-  const macroIcon = MACRO_ICON_CONFIG[getDominantMacro(entry)];
+  const dominantMacro = getDominantMacro(entry);
+  const macroIcon = MACRO_ICON_CONFIG[dominantMacro];
+  const macroStyles = nutritionStyles[dominantMacro];
 
   const renderDeleteAction = () => (
     <View className="w-[72px] items-center justify-center bg-state-destructive">
@@ -185,10 +183,10 @@ function FoodLogRow({
       >
         <View className="w-12 items-center justify-center">
           <View
-            className="h-9 w-9 items-center justify-center rounded-full"
-            style={{
-              backgroundColor: macroIcon.color,
-            }}
+            className={cn(
+              "h-9 w-9 items-center justify-center rounded-full",
+              macroStyles.dot,
+            )}
           >
             <MaterialCommunityIcons
               color="#FFFFFF"
@@ -216,19 +214,34 @@ function FoodLogRow({
             <View className="mt-1 flex-row items-center gap-3">
               <View className="min-w-0 flex-1 flex-row items-center gap-3">
                 <View className="flex-row items-center gap-1.5">
-                  <View className="h-2.5 w-2.5 rounded-full bg-nutrition-protein" />
+                  <View
+                    className={cn(
+                      nutritionStyles.smallDot,
+                      nutritionStyles.protein.dot,
+                    )}
+                  />
                   <Text className="text-sm leading-5 text-text-muted">
                     {formatNumber(entry.protein)}P
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-1.5">
-                  <View className="h-2.5 w-2.5 rounded-full bg-nutrition-carbs" />
+                  <View
+                    className={cn(
+                      nutritionStyles.smallDot,
+                      nutritionStyles.carbs.dot,
+                    )}
+                  />
                   <Text className="text-sm leading-5 text-text-muted">
                     {formatNumber(entry.carbs)}C
                   </Text>
                 </View>
                 <View className="flex-row items-center gap-1.5">
-                  <View className="h-2.5 w-2.5 rounded-full bg-nutrition-fat" />
+                  <View
+                    className={cn(
+                      nutritionStyles.smallDot,
+                      nutritionStyles.fat.dot,
+                    )}
+                  />
                   <Text className="text-sm leading-5 text-text-muted">
                     {formatNumber(entry.fat)}F
                   </Text>

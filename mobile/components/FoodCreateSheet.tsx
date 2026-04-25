@@ -12,7 +12,7 @@ import type { FoodListItem } from "@sazio-oss/shared";
 import { useTRPC } from "@/lib/trpc";
 import { mobileTheme } from "@/lib/theme";
 import { BottomSheetModal } from "@/components/BottomSheetModal";
-import { controlStyles } from "@/lib/styles";
+import { cn, controlStyles, formStyles } from "@/lib/styles";
 
 export type FoodCreateSheetParams = {
   initialName?: string;
@@ -125,12 +125,10 @@ export function FoodCreateSheet({
         contentContainerClassName="pb-8"
         keyboardShouldPersistTaps="handled"
       >
-        <View className="mt-6">
-          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-            Food Name
-          </Text>
+        <View className={formStyles.section}>
+          <Text className={formStyles.label}>Food Name</Text>
           <TextInput
-            className="h-12 rounded-xl border border-border-subtle bg-surface-input px-4 py-0 text-[16px] text-text-primary"
+            className={formStyles.input}
             value={name}
             onChangeText={setName}
             placeholder="Chicken breast"
@@ -138,12 +136,10 @@ export function FoodCreateSheet({
           />
         </View>
 
-        <View className="mt-6">
-          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-            Base Serving
-          </Text>
-          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
-            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+        <View className={formStyles.section}>
+          <Text className={formStyles.label}>Base Serving</Text>
+          <View className={formStyles.panel}>
+            <View className={formStyles.rowWithDivider}>
               <Text className="text-base text-text-primary">Size</Text>
               <TextInput
                 value={servingSize}
@@ -154,7 +150,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="numeric"
                 keyboardType="number-pad"
-                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
+                className={formStyles.inlineInput}
               />
             </View>
             <View className="px-4 py-3">
@@ -167,17 +163,18 @@ export function FoodCreateSheet({
                     <Pressable
                       key={unit}
                       onPress={() => setServingUnit(unit)}
-                      className={
+                      className={cn(
+                        controlStyles.textAction,
                         isSelected
-                          ? `min-w-[72px] rounded-full border border-text-primary bg-text-primary px-4 py-2 ${controlStyles.textAction}`
-                          : `min-w-[72px] rounded-full border border-border-strong bg-surface-raised px-4 py-2 ${controlStyles.textAction}`
-                      }
+                          ? formStyles.selectedChip
+                          : formStyles.unselectedChip,
+                      )}
                     >
                       <Text
                         className={
                           isSelected
-                            ? "text-center text-sm font-semibold uppercase text-text-inverse"
-                            : "text-center text-sm font-semibold uppercase text-text-primary"
+                            ? formStyles.selectedChipText
+                            : formStyles.unselectedChipText
                         }
                       >
                         {unit}
@@ -190,15 +187,13 @@ export function FoodCreateSheet({
           </View>
         </View>
 
-        <View className="mt-6">
-          <Text className="mb-2 text-sm font-medium uppercase text-text-muted">
-            Macros Per Serving
-          </Text>
+        <View className={formStyles.section}>
+          <Text className={formStyles.label}>Macros Per Serving</Text>
           <Text className="mb-3 text-sm leading-5 text-text-secondary">
             These values are stored for the base serving above.
           </Text>
-          <View className="overflow-hidden rounded-[20px] border border-border-subtle bg-surface-input">
-            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+          <View className={formStyles.panel}>
+            <View className={formStyles.rowWithDivider}>
               <Text className="text-base text-text-primary">Protein (g)</Text>
               <TextInput
                 value={protein}
@@ -209,10 +204,10 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
+                className={formStyles.inlineInput}
               />
             </View>
-            <View className="flex-row items-center justify-between border-b border-border-subtle px-4 py-3">
+            <View className={formStyles.rowWithDivider}>
               <Text className="text-base text-text-primary">Carbs (g)</Text>
               <TextInput
                 value={carbs}
@@ -221,10 +216,10 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
+                className={formStyles.inlineInput}
               />
             </View>
-            <View className="flex-row items-center justify-between px-4 py-3">
+            <View className={formStyles.row}>
               <Text className="text-base text-text-primary">Fat (g)</Text>
               <TextInput
                 value={fat}
@@ -233,7 +228,7 @@ export function FoodCreateSheet({
                 placeholderTextColor={mobileTheme.text.muted}
                 inputMode="decimal"
                 keyboardType="decimal-pad"
-                className="min-w-[96px] py-0 text-right text-[16px] text-text-primary"
+                className={formStyles.inlineInput}
               />
             </View>
           </View>

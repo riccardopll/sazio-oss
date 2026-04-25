@@ -11,7 +11,15 @@ import {
 import { getBottomTabBarContentPadding } from "@/components/BottomTabBarWithLogAction";
 import { Card } from "@/components/Card";
 import { ScreenHeader } from "@/components/ScreenHeader";
-import { cardStyles, cn, screenStyles, textStyles } from "@/lib/styles";
+import { mobileTheme } from "@/lib/theme";
+import {
+  cardStyles,
+  cn,
+  controlStyles,
+  nutritionStyles,
+  screenStyles,
+  textStyles,
+} from "@/lib/styles";
 import { useTRPC } from "@/lib/trpc";
 
 export default function Settings() {
@@ -38,7 +46,7 @@ export default function Settings() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
+    <SafeAreaView className={screenStyles.appRoot} edges={["top"]}>
       <ScrollView
         className="flex-1"
         contentContainerClassName={screenStyles.scrollContent}
@@ -50,8 +58,12 @@ export default function Settings() {
 
         <Card className="mt-6" contentClassName="p-0">
           <View className={cardStyles.row}>
-            <View className="h-14 w-14 items-center justify-center rounded-full bg-surface-raised">
-              <Ionicons color="#F5F5F7" name="person-outline" size={24} />
+            <View className={controlStyles.raisedIconLarge}>
+              <Ionicons
+                color={mobileTheme.text.primary}
+                name="person-outline"
+                size={24}
+              />
             </View>
             <View className="flex-1">
               <Text className={textStyles.cardTitle} numberOfLines={1}>
@@ -69,17 +81,27 @@ export default function Settings() {
             className={cn(cardStyles.row, "active:opacity-80")}
             onPress={() => router.push("/settings/goal")}
           >
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">
-              <Ionicons color="#F5F5F7" name="flag-outline" size={20} />
+            <View className={controlStyles.raisedIconSmall}>
+              <Ionicons
+                color={mobileTheme.text.primary}
+                name="flag-outline"
+                size={20}
+              />
             </View>
             <View className="flex-1">
               <Text className={textStyles.cardTitle}>My Goal</Text>
             </View>
             <View className="flex-row items-center gap-2">
               {!currentGoal ? (
-                <View className="h-2.5 w-2.5 rounded-full bg-accent-soft" />
+                <View
+                  className={cn(nutritionStyles.smallDot, "bg-accent-soft")}
+                />
               ) : null}
-              <Ionicons color="#8B8B92" name="chevron-forward" size={20} />
+              <Ionicons
+                color={mobileTheme.text.muted}
+                name="chevron-forward"
+                size={20}
+              />
             </View>
           </Pressable>
         </Card>
@@ -92,8 +114,12 @@ export default function Settings() {
             className={cn(cardStyles.row, "active:opacity-80")}
             onPress={handleSignOut}
           >
-            <View className="h-10 w-10 items-center justify-center rounded-full bg-surface-raised">
-              <Ionicons color="#FF5D73" name="log-out-outline" size={20} />
+            <View className={controlStyles.raisedIconSmall}>
+              <Ionicons
+                color={mobileTheme.state.destructive}
+                name="log-out-outline"
+                size={20}
+              />
             </View>
             <Text className="flex-1 text-lg font-semibold text-state-destructive">
               Sign Out

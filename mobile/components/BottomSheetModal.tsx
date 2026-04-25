@@ -4,17 +4,18 @@ import type { ReactNode } from "react";
 import {
   KeyboardAvoidingView,
   Modal,
-  Platform,
   Pressable,
   Text,
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { cn, controlStyles } from "@/lib/styles";
-import { mobileTheme } from "@/lib/theme";
-
-const CLOSE_BUTTON_SIZE = 40;
-const GLASS_TINT = "rgba(24, 24, 28, 0.72)";
+import {
+  cn,
+  controlStyles,
+  sheetNativeStyles,
+  sheetStyles,
+} from "@/lib/styles";
+import { glassTints, mobileTheme } from "@/lib/theme";
 
 interface BottomSheetModalProps {
   visible: boolean;
@@ -63,16 +64,8 @@ export function BottomSheetModal({
           className="absolute inset-0 bg-black/55"
           onPress={closeDisabled ? undefined : onClose}
         />
-        <KeyboardAvoidingView
-          behavior={Platform.OS === "ios" ? "padding" : undefined}
-          className="w-full justify-end"
-        >
-          <View
-            className={cn(
-              "min-h-80 max-h-[92%] w-full overflow-hidden rounded-t-[28px] bg-surface-sheet",
-              sheetClassName,
-            )}
-          >
+        <KeyboardAvoidingView behavior="padding" className="w-full justify-end">
+          <View className={cn(sheetStyles.container, sheetClassName)}>
             <View className="px-5 pb-2 pt-2">
               <View className="items-center">
                 <View className="h-1 w-12 rounded-full bg-border-strong" />
@@ -81,29 +74,19 @@ export function BottomSheetModal({
                 <Pressable
                   accessibilityLabel="Close"
                   accessibilityRole="button"
-                  className={cn(closeDisabled && "opacity-40")}
+                  className={cn(
+                    sheetStyles.iconButton,
+                    closeDisabled && "opacity-40",
+                  )}
                   disabled={closeDisabled}
                   onPress={onClose}
-                  style={{
-                    height: CLOSE_BUTTON_SIZE,
-                    width: CLOSE_BUTTON_SIZE,
-                  }}
                 >
                   <GlassView
                     colorScheme="dark"
                     glassEffectStyle="regular"
                     isInteractive
-                    style={{
-                      alignItems: "center",
-                      borderColor: mobileTheme.border.strong,
-                      borderRadius: CLOSE_BUTTON_SIZE / 2,
-                      borderWidth: 1,
-                      height: CLOSE_BUTTON_SIZE,
-                      justifyContent: "center",
-                      overflow: "hidden",
-                      width: CLOSE_BUTTON_SIZE,
-                    }}
-                    tintColor={GLASS_TINT}
+                    style={sheetNativeStyles.glassButton}
+                    tintColor={glassTints.sheet}
                   >
                     <Ionicons
                       color={mobileTheme.text.primary}
@@ -121,12 +104,11 @@ export function BottomSheetModal({
                   <Pressable
                     className={cn(
                       controlStyles.textAction,
-                      "items-end",
+                      "w-10 items-end",
                       actionDisabled && "opacity-40",
                     )}
                     disabled={actionDisabled}
                     onPress={onAction}
-                    style={{ width: CLOSE_BUTTON_SIZE }}
                   >
                     <Text
                       className={cn(
@@ -140,7 +122,7 @@ export function BottomSheetModal({
                     </Text>
                   </Pressable>
                 ) : (
-                  <View style={{ width: CLOSE_BUTTON_SIZE }} />
+                  <View className="w-10" />
                 )}
               </View>
             </View>

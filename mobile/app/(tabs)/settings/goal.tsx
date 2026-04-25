@@ -16,47 +16,56 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Card } from "@/components/Card";
 import { ScreenHeader } from "@/components/ScreenHeader";
 import { useTRPC } from "@/lib/trpc";
-import { mobileTheme } from "@/lib/theme";
-import { cn, controlStyles, screenStyles, textStyles } from "@/lib/styles";
+import { mobileTheme, nutritionTheme } from "@/lib/theme";
+import {
+  cn,
+  controlStyles,
+  nutritionStyles,
+  screenStyles,
+  textStyles,
+} from "@/lib/styles";
 
 const MAX_MACRO = 300;
+type MacroSliderVariant = "carbs" | "fat" | "protein";
 
 function calculateCalories(protein: number, carbs: number, fat: number) {
   return protein * 4 + carbs * 4 + fat * 9;
 }
 
 function MacroSlider({
-  color,
   label,
   value,
+  variant,
   onValueChange,
 }: {
-  color: string;
   label: string;
   value: number;
+  variant: MacroSliderVariant;
   onValueChange: (value: number) => void;
 }) {
+  const sliderTheme = nutritionTheme[variant];
+  const sliderStyles = nutritionStyles[variant];
+
   return (
     <View className="mt-5">
       <View className="flex-row items-center justify-between">
-        <Text className="text-sm font-medium uppercase tracking-[1.1px] text-text-muted">
-          {label}
-        </Text>
-        <Text className="text-base font-semibold" style={{ color }}>
+        <Text className={textStyles.sectionTitle}>{label}</Text>
+        <Text className={cn("text-base font-semibold", sliderStyles.text)}>
           {value}g
         </Text>
       </View>
-      <Slider
-        minimumValue={0}
-        maximumValue={MAX_MACRO}
-        step={1}
-        value={value}
-        minimumTrackTintColor={color}
-        maximumTrackTintColor={mobileTheme.border.strong}
-        thumbTintColor={color}
-        onValueChange={onValueChange}
-        style={{ marginTop: 8 }}
-      />
+      <View className="mt-2">
+        <Slider
+          minimumValue={0}
+          maximumValue={MAX_MACRO}
+          step={1}
+          value={value}
+          minimumTrackTintColor={sliderTheme.color}
+          maximumTrackTintColor={mobileTheme.border.strong}
+          thumbTintColor={sliderTheme.color}
+          onValueChange={onValueChange}
+        />
+      </View>
       <View className="mt-1 flex-row justify-between">
         <Text className="text-xs text-text-muted">0g</Text>
         <Text className="text-xs text-text-muted">{MAX_MACRO}g</Text>
@@ -122,10 +131,7 @@ export default function GoalScreen() {
 
   if (currentGoal === undefined) {
     return (
-      <SafeAreaView
-        className="flex-1 items-center justify-center bg-surface-app"
-        edges={["top"]}
-      >
+      <SafeAreaView className={screenStyles.centeredAppRoot} edges={["top"]}>
         <ActivityIndicator size="large" color={mobileTheme.state.loading} />
       </SafeAreaView>
     );
@@ -180,7 +186,7 @@ export default function GoalScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-app" edges={["top"]}>
+    <SafeAreaView className={screenStyles.appRoot} edges={["top"]}>
       <ScrollView
         className="flex-1"
         contentContainerClassName={cn(screenStyles.content, "pb-8")}
@@ -217,7 +223,12 @@ export default function GoalScreen() {
                   <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
                     P
                   </Text>
-                  <Text className="text-sm font-semibold text-nutrition-protein">
+                  <Text
+                    className={cn(
+                      "text-sm font-semibold",
+                      nutritionStyles.protein.text,
+                    )}
+                  >
                     {currentGoal.proteinGoal}g
                   </Text>
                 </View>
@@ -225,7 +236,12 @@ export default function GoalScreen() {
                   <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
                     C
                   </Text>
-                  <Text className="text-sm font-semibold text-nutrition-carbs">
+                  <Text
+                    className={cn(
+                      "text-sm font-semibold",
+                      nutritionStyles.carbs.text,
+                    )}
+                  >
                     {currentGoal.carbsGoal}g
                   </Text>
                 </View>
@@ -233,7 +249,12 @@ export default function GoalScreen() {
                   <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
                     F
                   </Text>
-                  <Text className="text-sm font-semibold text-nutrition-fat">
+                  <Text
+                    className={cn(
+                      "text-sm font-semibold",
+                      nutritionStyles.fat.text,
+                    )}
+                  >
                     {currentGoal.fatGoal}g
                   </Text>
                 </View>
@@ -241,7 +262,12 @@ export default function GoalScreen() {
                   <Text className="text-xs uppercase tracking-[1.1px] text-text-muted">
                     Calories
                   </Text>
-                  <Text className="text-sm font-semibold text-nutrition-calories">
+                  <Text
+                    className={cn(
+                      "text-sm font-semibold",
+                      nutritionStyles.calories.text,
+                    )}
+                  >
                     {currentGoal.calorieGoal}
                   </Text>
                 </View>
@@ -254,33 +280,38 @@ export default function GoalScreen() {
 
         <Card className="mt-6">
           <Text className={textStyles.sectionTitle}>Calories</Text>
-          <Text className="mt-2 text-4xl font-bold text-nutrition-calories">
+          <Text
+            className={cn(
+              "mt-2 text-4xl font-bold",
+              nutritionStyles.calories.text,
+            )}
+          >
             {calories}
           </Text>
 
           <MacroSlider
-            color={mobileTheme.nutrition.protein}
             label="Protein"
             value={protein}
+            variant="protein"
             onValueChange={setProtein}
           />
           <MacroSlider
-            color={mobileTheme.nutrition.carbs}
             label="Carbs"
             value={carbs}
+            variant="carbs"
             onValueChange={setCarbs}
           />
           <MacroSlider
-            color={mobileTheme.nutrition.fat}
             label="Fat"
             value={fat}
+            variant="fat"
             onValueChange={setFat}
           />
         </Card>
 
         <Pressable
           className={cn(
-            "mt-6 rounded-[24px] px-5 py-4",
+            controlStyles.primaryAction,
             setTodayGoal.isPending ? "bg-surface-raised" : "bg-text-primary",
           )}
           disabled={setTodayGoal.isPending || deleteGoal.isPending}
@@ -288,7 +319,7 @@ export default function GoalScreen() {
         >
           <Text
             className={cn(
-              "text-center text-base font-semibold",
+              controlStyles.primaryActionText,
               setTodayGoal.isPending
                 ? "text-text-secondary"
                 : "text-text-inverse",

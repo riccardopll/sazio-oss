@@ -5,6 +5,7 @@ import { View, Pressable, Text } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import GoogleSignInButton from "@/assets/images/ios_dark_sq_ctn.svg";
 import { Card } from "@/components/Card";
+import { screenStyles } from "@/lib/styles";
 
 export default function SignIn() {
   const { isLoaded, isSignedIn } = useAuth();
@@ -49,7 +50,7 @@ export default function SignIn() {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-surface-app">
+    <SafeAreaView className={screenStyles.appRoot}>
       <View className="flex-1 justify-center p-5">
         <Text className="text-xs uppercase tracking-[1.6px] text-text-muted">
           Sazio
